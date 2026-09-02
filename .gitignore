@@ -1,0 +1,9 @@
+/config/.env.prod
+/config/.env
+/venv/
+.idea
+/media/
+*.pyc
+celerybeat-schedule
+backup.conf
+backup.sh

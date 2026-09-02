@@ -1,0 +1,49 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:14.16
+    container_name: cbr_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./config/.env.prod
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    command: bash -c "service cron start && python3 manage.py crontab add && daphne -b 0.0.0.0 -p 8000 config.asgi:application"
+    container_name: cbr_web
+    volumes:
+      - static_volume:/home/cbr/web/static
+      - media_volume:/home/cbr/web/media
+    expose:
+      - 8000
+    env_file:
+      - ./config/.env.prod
+    depends_on:
+      - redis
+      - db
+  nginx:
+    build: ./nginx
+    restart: always
+    container_name: cbr_nginx
+    volumes:
+      - static_volume:/home/cbr/web/static
+      - media_volume:/home/cbr/web/media
+    ports:
+      - 8000:80
+    depends_on:
+      - web
+  redis:
+    image: redis:latest
+    container_name: cbr_redis
+    volumes:
+      - redisdata:/data
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
+  redisdata:

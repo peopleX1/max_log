@@ -1,0 +1,38 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+
+    <title>{% block title %} Title {% endblock title %}</title>
+
+    <link rel="icon" href="{% static 'images/logo.png' %}" type="image/icon type">
+
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap-grid.min.css' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap-reboot.min.css' %}">
+
+    <link rel="stylesheet"  href="{% static 'css/main.css' %}">
+    {% block css %} {% endblock css %}
+
+    <script>
+    /*to prevent Firefox FOUC, this must be here*/
+    let FF_FOUC_FIX;
+    </script>
+</head>
+<body>
+
+    {% block content %} {% endblock content %}
+
+
+
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/htmx.js' %}"></script>
+    <script src="{% static 'js/base.js' %}"></script>
+    {% block js_scripts %} {% endblock js_scripts %}
+</body>
+</html>
