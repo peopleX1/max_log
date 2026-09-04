@@ -5,8 +5,9 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('hidden-admin/', admin.site.urls),
-    path('users/', include('apps.users.urls')),
-    path('', include('apps.core.urls'))
+    path('i18n/', include('django.conf.urls.i18n')),
+    path('', include('apps.users.urls')),
+    path('home/', include('apps.core.urls')),
 ]
 
 if settings.DEBUG:

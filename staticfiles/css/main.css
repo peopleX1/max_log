@@ -1,0 +1,501 @@
+:root {
+    --header-height: 84px;
+    --grad-start: #99d5d7;
+    --grad-end: #80bcff;
+    --bg-additional-step-1: #0000;
+    --bg-additional-step-2: #0000;
+    --bg-additional-step-3: #0000;
+    --bg-additional-step-4: #0000;
+    --bg-additional-step-5: #0000;
+    --bg-additional-step-6: #0000;
+    --bg-pattern-step-1: #0000;
+    --bg-pattern-step-2: #0000;
+    --bg-pattern-step-3: #0000;
+    --bg-pattern-step-4: #0000;
+    --bg-pattern-step-5: #0000;
+    --bg-pattern-step-6: #0000;
+    --bg-pattern-gradient-step-1: #007aff4d;
+    --bg-pattern-gradient-step-2: #007aff4d;
+    --bubbles-system-step-1: #ffffffa3;
+    --bubbles-system-step-2: #ffffffe0;
+    --button-primary: #007aff;
+    --button-text-color-inverse: #fff;
+    --button-text-color-inverse-disabled: #ffffffb8;
+    --states-button-primary-hover: #479fff;
+    --states-button-primary-pressed: #006ee5;
+    --states-button-primary-disabled: #007aff7a;
+    --shadow-focused-default: #6d92ca;
+    --card-border: rgba(0, 0, 0, .10);
+    --icon-color: rgba(6, 7, 8, .84);
+    --color-text-primary: #1c1c1e;
+    --color-text-secondary: #6b7280;
+    --color-primary: #3d7bfc;
+    --color-main-text: #060708;
+    --select-bg-primary: #fff;
+    --select-bg-secondary: #f5f7fa;
+    --select-radius-m-half: 10px;
+    --select-radius-l: 14px;
+    --select-icon-primary: #060708d6;
+    --select-text-primary: #060708;
+    --select-shadow-1: #00000014;
+    --select-shadow-2: #00000014;
+    --select-spacing-m: 12px;
+    --select-spacing-s: 8px;
+    --select-spacing-s-half: 6px;
+    --select-font-size: 15px;
+    --select-line-height: 20px;
+    --select-letter-spacing: .15px;
+    --select-overlay-bg: rgba(170, 172, 175, 0.32);
+    --select-icon-mute: #06070847;
+    --select-bg-pressed: #fafafa;
+    --select-radius-m: 12px;
+    --select-sheet-radius: 32px;
+    --select-size-4: 4px;
+    --select-size-16: 16px;
+    --select-size-20: 20px;
+    --select-body-strong-weight: 500;
+    --select-body-strong-size: 16px;
+    --select-body-strong-line-height: 20px;
+    --select-body-strong-letter-spacing: .15px;
+    --select-code-color: rgba(6, 7, 8, .4);
+    --phone-field-surface: rgba(9, 9, 9, .05);
+    --phone-field-surface-hover: rgba(9, 9, 9, .08);
+    --phone-field-radius: 16px;
+    --phone-field-text-hint: rgba(6, 7, 8, .32);
+
+    font-family: -apple-system, BlinkMacSystemFont, "Roboto", system-ui, Avenir, Helvetica, Arial, sans-serif;;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: -apple-system, BlinkMacSystemFont, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    position: relative;
+    overflow: hidden;
+    color: var(--color-text-primary);
+}
+
+.background {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+}
+
+.layer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.layer-base {
+    background: linear-gradient(28deg, var(--grad-start) 8.03%, var(--grad-end) 91.51%);
+}
+
+.layer-additional {
+    background:
+        radial-gradient(57.57% 53.61% at 94.4% 14.38%, var(--bg-additional-step-1) 0%, var(--bg-additional-step-2) 50%, var(--bg-additional-step-3) 100%),
+        radial-gradient(140.37% 51.38% at 0% 80.05%, var(--bg-additional-step-4) 0%, var(--bg-additional-step-5) 50%, var(--bg-additional-step-6) 100%);
+}
+
+.layer-pattern {
+    background:
+        radial-gradient(57.57% 53.61% at 94.4% 14.38%, var(--bg-pattern-step-1) 0%, var(--bg-pattern-step-2) 50%, var(--bg-pattern-step-3) 100%),
+        radial-gradient(140.37% 51.38% at 0% 80.05%, var(--bg-pattern-step-4) 0%, var(--bg-pattern-step-5) 50%, var(--bg-pattern-step-6) 100%),
+        linear-gradient(28deg, var(--bg-pattern-gradient-step-1) 8.03%, var(--bg-pattern-gradient-step-2) 91.51%);
+    -webkit-mask-image: url("../images/bg.svg");
+    mask-image: url("../images/bg.svg");
+    -webkit-mask-repeat: repeat;
+    mask-repeat: repeat;
+    -webkit-mask-size: 280px 280px;
+    mask-size: 280px 280px;
+    -webkit-mask-position: 50%;
+    mask-position: 50%;
+}
+
+.card {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 580px;
+    min-height: 696px;
+    margin: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 28px;
+    border: 1px solid var(--card-border);
+    background: linear-gradient(180deg, var(--bubbles-system-step-1), var(--bubbles-system-step-2));
+    box-shadow: 0 4px 24px rgba(0, 0, 0, .08);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+}
+
+.card__header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    height: var(--header-height);
+}
+
+.card__footer {
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    width: 360px;
+    max-width: 100%;
+    flex-direction: column;
+    flex: 1;
+    display: flex;
+    padding-top: 54px;
+}
+
+.icon-btn {
+    position: relative;
+    width: 52px;
+    height: 52px;
+    border-radius: 24px;
+    border: none;
+    background: transparent;
+    color: var(--icon-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color .15s ease;
+}
+
+.icon-btn:hover {
+    background-color: rgba(0, 0, 0, .05);
+    color: inherit;
+}
+
+.icon-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+.language-select {
+    display: inline-flex;
+}
+
+@keyframes logo-wrapper-bob {
+    0% { transform: translateY(0%); }
+    50% { transform: translateY(10%); }
+    100% { transform: translateY(0%); }
+}
+
+@keyframes logo-shine {
+    0% { background-position: 100% 0; }
+    40% { background-position: 100% 0; }
+    50% { background-position: -100% 0; }
+    100% { background-position: -100% 0; }
+}
+
+.logoWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    animation: logo-wrapper-bob 3s linear infinite;
+}
+
+.logo {
+    position: relative;
+    width: 28px;
+    height: 28px;
+    background-image: url("../images/logo.png");
+    background-size: cover;
+    background-position: center;
+}
+
+.auth-card__body .logo {
+    width: 38px;
+    height: 38px;
+}
+
+.logo:after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    -webkit-mask: url("../images/logo.png") center / contain no-repeat;
+    mask: url("../images/logo.png") center / contain no-repeat;
+    background: linear-gradient(90deg, #fff0 15%, #ffffff4d 35%, #fff0 55%) 0 0 / 200% 100%;
+    animation: logo-shine 4s linear infinite;
+}
+
+.logoWrapper__name {
+    display: block;
+    height: 18px;
+    width: auto;
+}
+
+.auth-card__body .logoWrapper__name {
+    height: 21px;
+}
+
+.card__header .logoWrapper {
+    flex: 1;
+}
+
+.auth-card__body .logoWrapper {
+    padding-bottom: 24px;
+}
+
+.auth-card__body {
+    width: 360px;
+    padding: 48px 12px 0;
+    gap: 24px;
+    display: flex;
+    max-width: 100%;
+    flex-direction: column;
+}
+
+.auth-card__title_wrapper {
+    gap: 8px;
+    align-items: center;
+    padding-right: 16px;
+    padding-left: 16px;
+    white-space: pre-line;
+    flex-direction: column;
+    display: flex;
+}
+
+.auth-card__title {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 24px;
+    letter-spacing: 0;
+    text-align: center;
+    color: var(--color-main-text);
+    margin-bottom: 0;
+}
+
+.auth-card__subtitle {
+    color: #06070885;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 20px;
+    letter-spacing: .15px;
+    margin-bottom: 0;
+}
+
+.auth-card__form {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.auth-card__input {
+    width: 100%;
+}
+
+.auth-card__error {
+    color: #d92d20;
+    font-size: 0.85rem;
+    margin-top: 0.35rem;
+}
+
+.auth-card__hint {
+    color: #06070885;
+    margin-bottom: 0;
+    padding: 4px 12px 0;
+    letter-spacing: .2px;
+    font: 400 13px / 16px -apple-system, BlinkMacSystemFont, "Roboto", system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+.auth-card__submit {
+    width: 100%;
+    min-width: 64px;
+    height: 60px;
+    padding: 18px 22px;
+    border: none;
+    border-radius: 20px;
+    background-color: var(--button-primary);
+    color: var(--button-text-color-inverse);
+    transition: background-color .15s ease;
+    font: 500 17px / 20px -apple-system, BlinkMacSystemFont, "Roboto", system-ui, Avenir, Helvetica, Arial, sans-serif;
+    letter-spacing: .15px;
+}
+
+.auth-card__submit:hover:not(:disabled) {
+    background-color: var(--states-button-primary-hover);
+    cursor: pointer;
+}
+
+.auth-card__submit:active:not(:disabled) {
+    background-color: var(--states-button-primary-pressed);
+}
+
+.auth-card__submit:disabled {
+    background-color: var(--states-button-primary-disabled);
+    color: var(--button-text-color-inverse-disabled);
+    cursor: auto;
+}
+
+.auth-card__submit:focus-visible {
+    outline: 2px solid var(--shadow-focused-default);
+    outline-offset: 2px;
+}
+
+.auth-card__legal {
+    color: #06070885;
+    text-align: center;
+    font-size: 13px;
+    letter-spacing: .2px;
+    line-height: 16px;
+    margin-bottom: 0;
+}
+
+.auth-card__legal a {
+    color: #060708;
+    text-decoration: none;
+}
+
+.phone-field__row {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 52px;
+    padding: 6px 12px;
+    border-radius: var(--phone-field-radius);
+    background: var(--phone-field-surface);
+    transition: background .15s ease;
+    line-height: 20px;
+}
+
+.phone-field__row:focus-within {
+    background: var(--phone-field-surface-hover);
+}
+
+.phone-field__row .custom-select {
+    margin-right: 8px;
+}
+
+.phone-field__input-wrap {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+    cursor: text;
+}
+
+.phone-field__mirror {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+    visibility: hidden;
+    white-space: pre;
+    font-family: inherit;
+    font-size: var(--select-font-size);
+    line-height: var(--select-line-height);
+    letter-spacing: var(--select-letter-spacing);
+}
+
+.phone-field__mask {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    white-space: pre;
+    pointer-events: none;
+    color: var(--phone-field-text-hint);
+    font-size: var(--select-font-size);
+    line-height: var(--select-line-height);
+    letter-spacing: var(--select-letter-spacing);
+}
+
+.phone-field__national {
+    flex-shrink: 0;
+    width: 0;
+    min-width: 2px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--select-text-primary);
+    font-family: inherit;
+    font-size: var(--select-font-size);
+    line-height: var(--select-line-height);
+    letter-spacing: var(--select-letter-spacing);
+    padding: 0;
+}
+
+@media (max-width: 925px) {
+    .card {
+        text-align: center;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        max-width: none;
+        min-height: 0;
+        margin: 0;
+        display: flex;
+        position: relative;
+        overflow: hidden;
+        border-radius: 0;
+        border: none;
+        background: #f5f7fa;
+    }
+
+    .card__header {
+        height: 64px;
+        padding: 16px 0;
+    }
+
+    .card__footer {
+        padding: 0 12px 44px;
+        width: 100%;
+    }
+
+    .card__footer .auth-card__legal {
+        width: 360px;
+        padding: 0 12px;
+    }
+
+     .card__header .logoWrapper__name {
+        height: 15px;
+    }
+
+     .auth-card__form {
+         gap: 28px;
+     }
+
+    .auth-card__body {
+        width: 100%;
+        gap: 28px;
+        padding: 20px 16px 0;
+        height: 100vh;
+    }
+
+    .auth-card__body .logoWrapper {
+        display: none;
+    }
+
+    .auth-card__title_wrapper {
+        gap: 12px;
+    }
+}
+
+@media (min-width: 926px) {
+    .card__header .logoWrapper {
+        display: none;
+    }
+}

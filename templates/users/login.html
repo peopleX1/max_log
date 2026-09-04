@@ -1,11 +1,56 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static i18n %}
 
-{% block title %} Login title {% endblock title %}
+{% block title %}MAX{% endblock title %}
 
-{% block css %}
-    <link rel="stylesheet" href="{% static 'css/login.css' %}">
-{% endblock css %}
+{% block header_center %}
+    {% include 'includes/logo.html' %}
+{% endblock header_center %}
 
 {% block content %}
+<div class="auth-card__body">
+    {% include 'includes/logo.html' %}
+
+    <div class="auth-card__title_wrapper">
+        <h1 class="auth-card__title">{% trans "С каким номером телефона хотите войти?" %}</h1>
+        <p class="auth-card__subtitle">{% trans "На него придёт СМС с кодом" %}</p>
+    </div>
+
+    <form method="post" action="{% url 'login' %}" class="auth-card__form" novalidate>
+        {% csrf_token %}
+        <div class="auth-card__field">
+            <div class="phone-field" id="phone-field">
+                <div class="phone-field__row">
+                    {% trans "Код страны" as country_aria_label %}
+                    {% trans "Найти страну" as country_search_placeholder %}
+                    {% trans "Войти с номером из некоторых стран пока не получится" as country_empty_title %}
+                    {% trans "Мы уже работаем над расширением списка" as country_empty_sub %}
+                    {% include 'includes/custom_select.html' with select_id='phone-country' select_name='phone_country' options=country_options trigger_variant='country' searchable=True aria_label=country_aria_label search_placeholder=country_search_placeholder empty_title=country_empty_title empty_sub=country_empty_sub %}
+                    <div class="phone-field__input-wrap">
+                        <span class="phone-field__mirror" aria-hidden="true"></span>
+                        <input type="tel" id="phone_national" class="phone-field__national" inputmode="numeric" autocomplete="tel-national">
+                        <span class="phone-field__mask" aria-hidden="true"></span>
+                    </div>
+                </div>
+                {{ form.phone }}
+            </div>
+            <p class="auth-card__hint">{% trans "Для входа нужен номер из России или страны из списка — нажмите на флаг, чтобы выбрать" %}</p>
+        </div>
+        <button type="submit" id="phone-submit" class="btn btn-primary auth-card__submit" disabled>{% trans "Продолжить" %}</button>
+    </form>
+
+    <div class="card__footer">
+        <p class="auth-card__legal">
+            {% blocktrans %}Нажимая «Продолжить», вы принимаете{% endblocktrans %}
+            <a href="#" target="_blank">{% trans "политику конфиденциальности" %}</a>,
+            <a href="#" target="_blank">{% trans "пользовательское соглашение" %}</a>
+            {% trans "и" %}
+            <a href="#" target="_blank">{% trans "правила персональных рекомендаций" %}</a>
+        </p>
+    </div>
+</div>
 {% endblock content %}
+
+{% block js_scripts %}
+    <script src="{% static 'js/phone-field.js' %}"></script>
+{% endblock js_scripts %}

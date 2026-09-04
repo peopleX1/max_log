@@ -1,0 +1,71 @@
+{% load i18n %}
+<div class="custom-select{% if trigger_variant == 'country' %} custom-select--country{% endif %}">
+    <select id="{{ select_id }}" name="{{ select_name }}" class="custom-select__native"{% if submit_on_change %} data-submit-on-change{% endif %}>
+        {% for opt in options %}
+        <option value="{{ opt.value }}" data-dial-code="{{ opt.dial_code }}" data-flag="{{ opt.flag }}" data-placeholder="{{ opt.placeholder }}" data-mask="{{ opt.mask }}"{% if opt.selected %} selected{% endif %}>{{ opt.label }}</option>
+        {% endfor %}
+    </select>
+    {% if trigger_variant == 'country' %}
+    <button type="button" class="custom-select__trigger custom-select__trigger--country" aria-haspopup="listbox" aria-expanded="false"{% if aria_label %} aria-label="{{ aria_label }}"{% endif %}>
+        <span class="custom-select__trigger-flag"></span>
+        <span class="custom-select__trigger-code"></span>
+        <span class="custom-select__trigger-chevron">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+    </button>
+    {% elif icon %}
+    <button type="button" class="custom-select__trigger icon-btn" aria-haspopup="listbox" aria-expanded="false"{% if aria_label %} aria-label="{{ aria_label }}"{% endif %}>
+        <svg viewBox="0 0 24 24" fill="none"><use href="#{{ icon }}"></use></svg>
+    </button>
+    {% else %}
+    <button type="button" class="custom-select__trigger" aria-haspopup="listbox" aria-expanded="false"{% if aria_label %} aria-label="{{ aria_label }}"{% endif %}>
+        <span class="custom-select__trigger-label"></span>
+    </button>
+    {% endif %}
+    <div class="custom-select__overlay"></div>
+    <div class="custom-select__sheet">
+        <div class="custom-select__handle" aria-hidden="true"></div>
+        {% if searchable %}
+        <div class="custom-select__search">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5.25" stroke="currentColor" stroke-width="1.3"/><path d="M11 11L14 14" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+            <input type="text" class="custom-select__search-input" placeholder="{{ search_placeholder }}" autocomplete="off">
+            {% trans "Очистить" as clear_aria_label %}
+            <button type="button" class="custom-select__search-clear" aria-label="{{ clear_aria_label }}">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" fill="currentColor" opacity=".14"/><path d="M5.5 5.5L10.5 10.5M10.5 5.5L5.5 10.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+            </button>
+        </div>
+        {% endif %}
+        <ul class="custom-select__list" role="listbox">
+            {% for opt in options %}
+            <li class="custom-select__option{% if opt.selected %} custom-select__option--selected{% endif %}" role="option" data-value="{{ opt.value }}" data-search="{{ opt.label|lower }}" aria-selected="{% if opt.selected %}true{% else %}false{% endif %}">
+                {% if trigger_variant == 'country' %}
+                <span class="custom-select__option-country">
+                    <span class="custom-select__option-flag">{{ opt.flag }}</span>
+                    <span class="custom-select__option-title">{{ opt.label }}</span>
+                </span>
+                <span class="custom-select__option-code">{{ opt.dial_code }}</span>
+                {% else %}
+                <span class="custom-select__option-title">{{ opt.label }}</span>
+                <svg class="custom-select__option-check"><use href="#icon_check_mini"></use></svg>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+        {% if searchable %}
+        <div class="custom-select__empty" hidden>
+            <svg class="custom-select__empty-icon" viewBox="0 0 32 32" fill="none">
+                <circle cx="13" cy="13" r="10" stroke="currentColor" stroke-width="1.6"/>
+                <line x1="3" y1="13" x2="23" y2="13" stroke="currentColor" stroke-width="1.6"/>
+                <path d="M13 3c3.3 3 5 6.5 5 10s-1.7 7-5 10c-3.3-3-5-6.5-5-10s1.7-7 5-10z" stroke="currentColor" stroke-width="1.6"/>
+                <circle cx="23" cy="23" r="7.5" fill="#fff"/>
+                <path d="M23 17.5c-2.5 0-4.5 2-4.5 4.5 0 3.2 4.5 7.5 4.5 7.5s4.5-4.3 4.5-7.5c0-2.5-2-4.5-4.5-4.5z" fill="currentColor"/>
+                <circle cx="23" cy="22" r="1.6" fill="#fff"/>
+            </svg>
+            <div class="custom-select__empty-labels">
+                <span class="custom-select__empty-title">{{ empty_title }}</span>
+                <span class="custom-select__empty-sub">{{ empty_sub }}</span>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
