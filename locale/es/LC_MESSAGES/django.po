@@ -1,66 +1,126 @@
-# Spanish translations for max_log.
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-03 12:26+0300\n"
-"PO-Revision-Date: 2026-09-03 12:26+0300\n"
-"Last-Translator: \n"
-"Language-Team: Spanish\n"
-"Language: es\n"
+"POT-Creation-Date: 2026-09-08 11:35+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? "
+"1 : 2;\n"
 
-#: apps/users/forms.py:8 apps/users/forms.py:11
-msgid "Номер телефона"
-msgstr "Número de teléfono"
+#: templates/base.html:40
+msgid "Назад"
+msgstr "Atrás"
 
-#: templates/base.html:8
-msgid "Max Log"
-msgstr "Max Log"
+#: templates/includes/custom_select.html:32
+msgid "Очистить"
+msgstr "Borrar"
 
-#: templates/base.html:31
+#: templates/users/captcha.html:13
+msgid "Проверяем, что вы не робот"
+msgstr "Comprobamos que no eres un robot"
+
+#: templates/users/captcha.html:20
+msgid "Я не робот"
+msgstr "No soy un robot"
+
+#: templates/users/captcha.html:24
+msgid "Условия использования"
+msgstr "Términos de uso"
+
+#: templates/users/code.html:13
+msgid "Отправили код"
+msgstr "Hemos enviado un código"
+
+#: templates/users/code.html:13
+#, python-format
+msgid "на %(phone)s"
+msgstr "a %(phone)s"
+
+#: templates/users/code.html:14
+msgid "Если не получили СМС, проверьте чат «Коды подтверждения» в MAX"
+msgstr ""
+"Si no recibiste el SMS, revisa el chat «Códigos de confirmación» en MAX"
+
+#: templates/users/code.html:27 templates/users/code.html:121
+msgid "Получить новый код можно через"
+msgstr "Puedes solicitar un nuevo código en"
+
+#: templates/users/code.html:109
+msgid "Отправить код повторно"
+msgstr "Reenviar código"
+
+#: templates/users/login.html:9
 msgid "Язык"
 msgstr "Idioma"
 
-#: templates/users/login.html:4
-msgid "Вход"
-msgstr "Iniciar sesión"
+#: templates/users/login.html:15 templates/users/login.html:23
+msgid "Ответы на популярные вопросы"
+msgstr "Respuestas a preguntas frecuentes"
 
-#: templates/users/login.html:14
-msgid "На какой номер телефона вы хотите войти?"
+#: templates/users/login.html:34
+msgid "С каким номером телефона хотите войти?"
 msgstr "¿Con qué número de teléfono quieres iniciar sesión?"
 
-#: templates/users/login.html:15
-msgid "Мы отправим вам SMS с кодом."
-msgstr "Te enviaremos un SMS con un código."
+#: templates/users/login.html:35
+msgid "На него придёт СМС с кодом"
+msgstr "Se le enviará un SMS con código"
 
-#: templates/users/login.html:25
-msgid "Введите номер вместе с кодом страны."
-msgstr "Introduce el número junto con el código de país."
+#: templates/users/login.html:43
+msgid "Код страны"
+msgstr "Código de país"
 
-#: templates/users/login.html:26
+#: templates/users/login.html:44
+msgid "Найти страну"
+msgstr "Buscar país"
+
+#: templates/users/login.html:45
+msgid "Войти с номером из некоторых стран пока не получится"
+msgstr "No se puede iniciar sesión con un número de teléfono de algunos países"
+
+#: templates/users/login.html:46
+msgid "Мы уже работаем над расширением списка"
+msgstr "Ya estamos trabajando para ampliar la lista"
+
+#: templates/users/login.html:56
+msgid ""
+"Для входа нужен номер из России или страны из списка — нажмите на флаг, "
+"чтобы выбрать"
+msgstr ""
+"Para iniciar sesión, necesitas un número de Rusia o de un país de la lista. "
+"Haz clic en la bandera para seleccionar"
+
+#: templates/users/login.html:58
 msgid "Продолжить"
 msgstr "Continuar"
 
-#: templates/users/login.html:30
+#: templates/users/login.html:63
 msgid "Нажимая «Продолжить», вы принимаете"
-msgstr "Al hacer clic en Continuar, aceptas"
+msgstr "Al hacer clic en «Continuar», aceptas"
 
-#: templates/users/login.html:31
-msgid "Политику конфиденциальности"
-msgstr "la Política de Privacidad"
+#: templates/users/login.html:64
+msgid "политику конфиденциальности"
+msgstr "política de privacidad"
 
-#: templates/users/login.html:32
-msgid "Пользовательское соглашение"
-msgstr "el Acuerdo de Usuario"
+#: templates/users/login.html:65
+msgid "пользовательское соглашение"
+msgstr "acuerdo de usuario"
 
-#: templates/users/login.html:33
+#: templates/users/login.html:66
 msgid "и"
 msgstr "y"
 
-#: templates/users/login.html:34
-msgid "Правила персональных рекомендаций"
-msgstr "las Reglas de Recomendaciones Personales"
+#: templates/users/login.html:67
+msgid "правила персональных рекомендаций"
+msgstr "normas de recomendaciones personalizadas"

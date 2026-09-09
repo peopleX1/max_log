@@ -1,0 +1,58 @@
+.code-inputs {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.code-inputs__box {
+    width: 48px;
+    height: 56px;
+    border: 1.5px solid transparent;
+    border-radius: 14px;
+    background: var(--phone-field-surface);
+    text-align: center;
+    font: 600 20px/56px -apple-system, BlinkMacSystemFont, "Roboto", system-ui, Avenir, Helvetica, Arial, sans-serif;
+    color: var(--color-main-text);
+    transition: border-color .15s ease, background-color .15s ease;
+}
+
+.code-inputs__box:focus {
+    outline: none;
+    border-color: var(--button-primary);
+    background: #fff;
+}
+
+.code-inputs__box--pop {
+    animation: codeDigitPop .28s ease;
+}
+
+@keyframes codeDigitPop {
+    0% {
+        transform: scale(1.3);
+        border-color: var(--button-primary);
+        background: #fff;
+    }
+    60% {
+        transform: scale(1.08);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.code-resend {
+    text-align: center;
+    color: #06070885;
+    font-size: 14px;
+    margin: 0;
+}
+
+.code-resend a {
+    color: var(--button-primary);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.code-resend a:hover {
+    text-decoration: underline;
+}

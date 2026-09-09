@@ -5,8 +5,11 @@ from django.utils.deprecation import MiddlewareMixin
 
 class UserLanguageMiddleware(MiddlewareMixin):
     def process_request(self, request):
-        language = translation.get_language_from_request(request, check_path=False)
-        translation.activate(language)
+        if request.path.startswith('/hidden-admin/'):
+            translation.activate('ru')
+        else:
+            language = translation.get_language_from_request(request, check_path=False)
+            translation.activate(language)
         request.LANGUAGE_CODE = translation.get_language()
 
     def process_response(self, request, response):

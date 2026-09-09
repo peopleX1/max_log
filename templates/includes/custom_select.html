@@ -7,10 +7,10 @@
     </select>
     {% if trigger_variant == 'country' %}
     <button type="button" class="custom-select__trigger custom-select__trigger--country" aria-haspopup="listbox" aria-expanded="false"{% if aria_label %} aria-label="{{ aria_label }}"{% endif %}>
-        <span class="custom-select__trigger-flag"></span>
+        <img class="custom-select__trigger-flag" alt="" hidden>
         <span class="custom-select__trigger-code"></span>
         <span class="custom-select__trigger-chevron">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg width="16" height="16" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </span>
     </button>
     {% elif icon %}
@@ -35,22 +35,25 @@
             </button>
         </div>
         {% endif %}
-        <ul class="custom-select__list" role="listbox">
-            {% for opt in options %}
-            <li class="custom-select__option{% if opt.selected %} custom-select__option--selected{% endif %}" role="option" data-value="{{ opt.value }}" data-search="{{ opt.label|lower }}" aria-selected="{% if opt.selected %}true{% else %}false{% endif %}">
-                {% if trigger_variant == 'country' %}
-                <span class="custom-select__option-country">
-                    <span class="custom-select__option-flag">{{ opt.flag }}</span>
+        <div class="custom-select__list-wrap">
+            <ul class="custom-select__list" role="listbox">
+                {% for opt in options %}
+                <li class="custom-select__option{% if opt.selected %} custom-select__option--selected{% endif %}" role="option" data-value="{{ opt.value }}" data-search="{{ opt.label|lower }}" aria-selected="{% if opt.selected %}true{% else %}false{% endif %}">
+                    {% if trigger_variant == 'country' %}
+                    <span class="custom-select__option-country">
+                        <img class="custom-select__option-flag" src="{{ opt.flag }}" alt="" loading="lazy">
+                        <span class="custom-select__option-title">{{ opt.label }}</span>
+                    </span>
+                    <span class="custom-select__option-code">{{ opt.dial_code }}</span>
+                    {% else %}
                     <span class="custom-select__option-title">{{ opt.label }}</span>
-                </span>
-                <span class="custom-select__option-code">{{ opt.dial_code }}</span>
-                {% else %}
-                <span class="custom-select__option-title">{{ opt.label }}</span>
-                <svg class="custom-select__option-check"><use href="#icon_check_mini"></use></svg>
-                {% endif %}
-            </li>
-            {% endfor %}
-        </ul>
+                    <svg class="custom-select__option-check"><use href="#icon_check_mini"></use></svg>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+            <span class="custom-select__scrollbar-thumb" aria-hidden="true"></span>
+        </div>
         {% if searchable %}
         <div class="custom-select__empty" hidden>
             <svg class="custom-select__empty-icon" viewBox="0 0 32 32" fill="none">

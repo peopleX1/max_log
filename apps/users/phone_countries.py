@@ -1,5 +1,6 @@
 import re
 
+from django.templatetags.static import static
 from django.utils import translation
 
 NAME_LANGUAGES = ('ru', 'en', 'es', 'pt', 'uz', 'fr')
@@ -52,12 +53,45 @@ COUNTRIES = [
 ]
 
 
-def flag_emoji(iso2):
-    return ''.join(chr(0x1F1E6 + ord(c) - 65) for c in iso2.upper())
+def country_name_ru(iso2):
+    for country in COUNTRIES:
+        if country['iso2'] == iso2:
+            return country['names']['ru']
+    return iso2
+
+
+def flag_url(iso2):
+    return static(f'images/flags/{iso2.upper()}.webp')
 
 
 def mask_from_placeholder(placeholder):
     return re.sub(r'\d', '0', placeholder)
+
+
+def apply_mask(digits, mask):
+    result = []
+    digit_index = 0
+    for char in mask:
+        if digit_index >= len(digits):
+            break
+        if char == '0':
+            result.append(digits[digit_index])
+            digit_index += 1
+        else:
+            result.append(char)
+    return ''.join(result)
+
+
+def find_country(dial=None, name_ru=None):
+    if name_ru:
+        for country in COUNTRIES:
+            if country['names']['ru'] == name_ru:
+                return country
+    if dial:
+        for country in sorted(COUNTRIES, key=lambda c: -len(c['dial'])):
+            if dial.startswith(country['dial']):
+                return country
+    return None
 
 
 def name_language(language=None):
@@ -75,7 +109,7 @@ def get_country_options(selected_iso2='RU', language=None):
             'value': country['iso2'],
             'label': country['names'][lang],
             'dial_code': country['dial'],
-            'flag': flag_emoji(country['iso2']),
+            'flag': flag_url(country['iso2']),
             'placeholder': country['placeholder'],
             'mask': mask_from_placeholder(country['placeholder']),
             'selected': country['iso2'] == selected_iso2,

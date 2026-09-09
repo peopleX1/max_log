@@ -1,0 +1,93 @@
+.captcha-card {
+    width: 100%;
+    max-width: 336px;
+    margin: 0 auto;
+    background: var(--select-bg-secondary, #f5f7fa);
+    border: 1px solid var(--card-border, #e2e5e9);
+    border-radius: 16px;
+    padding: 20px 24px;
+    box-sizing: border-box;
+    font: 400 15px/20px -apple-system, BlinkMacSystemFont, "Roboto", system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+.captcha-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.captcha-checkbox input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.captcha-checkbox__box {
+    flex: 0 0 auto;
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    border: 1.5px solid #c7ccd1;
+    background: #fff;
+    cursor: pointer;
+    transition: border-color .15s ease, background-color .15s ease, box-shadow .15s ease;
+    position: relative;
+}
+
+.captcha-checkbox:hover .captcha-checkbox__box {
+    border-color: var(--button-primary);
+    box-shadow: 0 0 0 4px rgba(0, 122, 255, .1);
+}
+
+.captcha-checkbox input:checked + .captcha-checkbox__box {
+    background: #43a047;
+    border-color: #43a047;
+}
+
+.captcha-checkbox input:checked + .captcha-checkbox__box::after {
+    content: "";
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 6px;
+    height: 11px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.captcha-checkbox__label {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--color-main-text);
+}
+
+.captcha-footer {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--card-border, #e2e5e9);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.captcha-terms {
+    font-size: 12px;
+    color: var(--color-text-secondary, #8a9099);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.captcha-terms:hover {
+    text-decoration: underline;
+}
+
+.captcha-id {
+    font-size: 11px;
+    color: #b0b5bb;
+    font-family: "SFMono-Regular", Consolas, Menlo, monospace;
+    word-break: break-all;
+}

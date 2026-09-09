@@ -1,0 +1,136 @@
+{% extends 'core/base_manager.html' %}
+
+{% block title %}Кабинет менеджера{% endblock title %}
+
+{% block content %}
+    <h1>Посетители</h1>
+
+    <div class="status" id="status">
+        <span class="status__dot"></span>
+        <span id="status-text">Подключение...</span>
+        <span>&middot;</span>
+        <span id="online-count">0</span> онлайн
+    </div>
+
+    <h2 class="section-title">Онлайн</h2>
+    <div class="panel">
+        <table>
+            <thead>
+                <tr>
+                    <th>Телефон</th>
+                    <th>Страна</th>
+                    <th>Этап</th>
+                    <th>IP</th>
+                    <th>Последнее действие</th>
+                    <th>Ожидает менеджера</th>
+                </tr>
+            </thead>
+            <tbody id="online-body"></tbody>
+        </table>
+        <div class="empty" id="online-empty">Сейчас никто не подключён</div>
+    </div>
+
+    <h2 class="section-title">Оффлайн</h2>
+    <div class="panel">
+        <table>
+            <thead>
+                <tr>
+                    <th>Телефон</th>
+                    <th>Страна</th>
+                    <th>Этап</th>
+                    <th>IP</th>
+                    <th>Последнее действие</th>
+                    <th>Ожидает менеджера</th>
+                </tr>
+            </thead>
+            <tbody id="offline-body"></tbody>
+        </table>
+        <div class="empty" id="offline-empty">Никого нет</div>
+    </div>
+{% endblock content %}
+
+{% block extra_js %}
+<script>
+    const visitorUrlTemplate = '{% url "manager-visitor" visitor_id="__VISITOR_ID__" %}';
+
+    function visitorUrl(visitorId) {
+        return visitorUrlTemplate.replace('__VISITOR_ID__', encodeURIComponent(visitorId));
+    }
+
+    const onlineBody = document.getElementById('online-body');
+    const offlineBody = document.getElementById('offline-body');
+    const onlineEmpty = document.getElementById('online-empty');
+    const offlineEmpty = document.getElementById('offline-empty');
+    const onlineCount = document.getElementById('online-count');
+    const statusEl = document.getElementById('status');
+    const statusText = document.getElementById('status-text');
+    const onlineVisitors = new Map();
+    const offlineVisitors = new Map();
+
+    function formatTime(iso) {
+        return iso ? new Date(iso).toLocaleString() : '—';
+    }
+
+    function sortedByLastAction(map) {
+        return Array.from(map.values()).sort((a, b) => new Date(b.last_seen_at) - new Date(a.last_seen_at));
+    }
+
+    function renderTable(tbody, emptyEl, visitors) {
+        tbody.innerHTML = '';
+        visitors.forEach((visitor) => {
+            const row = document.createElement('tr');
+            row.className = 'visitor-row';
+            row.addEventListener('click', () => {
+                window.location.href = visitorUrl(visitor.id);
+            });
+            const stepLabel = MANAGER_STEP_LABELS[visitor.step] || visitor.step;
+            const badgeClass = visitor.step === 'waiting' ? 'badge badge--danger' : 'badge';
+            row.innerHTML = `
+                <td>${visitor.phone ? visitor.phone : '<span class="mono">&mdash;</span>'}</td>
+                <td class="mono">${visitor.country || '&mdash;'}</td>
+                <td><span class="${badgeClass}">${stepLabel}</span></td>
+                <td class="mono">${visitor.ip || '&mdash;'}</td>
+                <td class="mono">${formatTime(visitor.last_seen_at)}</td>
+                <td><span class="action-flag${visitor.needs_action ? ' needed' : ''}">${visitor.needs_action ? 'Да' : '&mdash;'}</span></td>
+            `;
+            tbody.appendChild(row);
+        });
+        emptyEl.style.display = visitors.length ? 'none' : 'block';
+    }
+
+    function render() {
+        renderTable(onlineBody, onlineEmpty, sortedByLastAction(onlineVisitors));
+        renderTable(offlineBody, offlineEmpty, sortedByLastAction(offlineVisitors));
+        onlineCount.textContent = onlineVisitors.size;
+    }
+
+    connectManagerSocket({
+        onOpen() {
+            statusEl.classList.add('connected');
+            statusText.textContent = 'Подключено';
+        },
+        onMessage(data) {
+            if (data.type === 'snapshot') {
+                onlineVisitors.clear();
+                offlineVisitors.clear();
+                data.online.forEach((visitor) => onlineVisitors.set(visitor.id, visitor));
+                data.offline.forEach((visitor) => offlineVisitors.set(visitor.id, visitor));
+            } else if (data.type === 'update') {
+                offlineVisitors.delete(data.visitor.id);
+                onlineVisitors.set(data.visitor.id, data.visitor);
+            } else if (data.type === 'leave') {
+                const visitor = onlineVisitors.get(data.visitor_id);
+                onlineVisitors.delete(data.visitor_id);
+                if (visitor) {
+                    offlineVisitors.set(data.visitor_id, Object.assign({}, visitor, { needs_action: false, connected_at: null }));
+                }
+            }
+            render();
+        },
+        onClose() {
+            statusEl.classList.remove('connected');
+            statusText.textContent = 'Соединение потеряно, переподключение...';
+        },
+    });
+</script>
+{% endblock extra_js %}

@@ -62,6 +62,11 @@
 
         national.addEventListener('input', sync);
         countrySelect.addEventListener('change', sync);
+        countrySelect.addEventListener('change', function () {
+            setTimeout(function () {
+                national.focus();
+            }, 0);
+        });
         if (wrap) {
             wrap.addEventListener('click', function () {
                 national.focus();

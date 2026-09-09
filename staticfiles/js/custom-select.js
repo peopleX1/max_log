@@ -80,7 +80,9 @@
                 label.textContent = current ? current.textContent : '';
             }
             if (triggerFlag) {
-                triggerFlag.textContent = current ? current.dataset.flag : '';
+                var flagUrl = current ? current.dataset.flag : '';
+                triggerFlag.src = flagUrl || '';
+                triggerFlag.hidden = !flagUrl;
             }
             if (triggerCode) {
                 triggerCode.textContent = current ? current.dataset.dialCode : '';

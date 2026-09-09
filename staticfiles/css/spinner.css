@@ -1,0 +1,52 @@
+@keyframes maxSpinnerFade { 0% { opacity: 1; } 100% { opacity: .2; } }
+
+.max-spinner--ios {
+    display: inline-block;
+    position: relative;
+    width: 40px;
+    height: 40px;
+}
+
+.max-spinner--ios .max-spinner__bar {
+    position: absolute;
+    top: 36%;
+    left: 45%;
+    width: 12.5%;
+    height: 30%;
+    background: var(--max-spinner-color, var(--button-primary));
+    border-radius: 999px;
+    opacity: 0;
+    animation: maxSpinnerFade .8s linear infinite;
+}
+
+.max-spinner--ios .max-spinner__bar:nth-child(1) { animation-delay: 0s;   transform: rotate(0deg)   translateY(-130%); }
+.max-spinner--ios .max-spinner__bar:nth-child(2) { animation-delay: -.7s; transform: rotate(45deg)  translateY(-130%); }
+.max-spinner--ios .max-spinner__bar:nth-child(3) { animation-delay: -.6s; transform: rotate(90deg)  translateY(-130%); }
+.max-spinner--ios .max-spinner__bar:nth-child(4) { animation-delay: -.5s; transform: rotate(135deg) translateY(-130%); }
+.max-spinner--ios .max-spinner__bar:nth-child(5) { animation-delay: -.4s; transform: rotate(180deg) translateY(-130%); }
+.max-spinner--ios .max-spinner__bar:nth-child(6) { animation-delay: -.3s; transform: rotate(225deg) translateY(-130%); }
+.max-spinner--ios .max-spinner__bar:nth-child(7) { animation-delay: -.2s; transform: rotate(270deg) translateY(-130%); }
+.max-spinner--ios .max-spinner__bar:nth-child(8) { animation-delay: -.1s; transform: rotate(315deg) translateY(-130%); }
+
+.spinner-block {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 0;
+}
+
+.spinner-block[hidden] {
+    display: none;
+}
+
+@media (min-width: 926px) {
+    .auth-card__body.step-loading > :not(.logoWrapper) {
+        display: none;
+    }
+}
+
+@media (max-width: 925px) {
+    .auth-card__body.step-loading {
+        display: none;
+    }
+}

@@ -5,7 +5,7 @@
 # pull official base image
 FROM ubuntu:22.04 as builder
 # set work directory
-WORKDIR /usr/src/cbr
+WORKDIR /usr/src/max_log
 
 # set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -39,7 +39,7 @@ COPY . .
 
 # install dependencies
 COPY ./requirements.txt .
-RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/cbr/wheels -r requirements.txt
+RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/max_log/wheels -r requirements.txt
 
 
 #########
@@ -50,7 +50,7 @@ RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/cbr/wheels -r requir
 FROM ubuntu:22.04
 
 # create directory for the app user
-RUN mkdir -p /home/cbr
+RUN mkdir -p /home/max_log
 
 # set default timezone
 RUN ln -snf /usr/share/zoneinfo/$CONTAINER_TIMEZONE /etc/localtime && echo $CONTAINER_TIMEZONE > /etc/timezone
@@ -77,17 +77,17 @@ RUN apt-get update -y && \
 RUN locale-gen en_US.UTF-8 ru_RU.UTF-8 && update-locale
 
 # Create a user group
-#RUN addgroup cbr-group
+#RUN addgroup max_log-group
 
 # Create a user
-#RUN useradd -ms /bin/bash  cbr-user
+#RUN useradd -ms /bin/bash  max_log-user
 
 # Chown all the files to the app user.
-#RUN chown -R cbr-user:cbr-group /usr/src/
+#RUN chown -R max_log-user:max_log-group /usr/src/
 
 # create the appropriate directories
-ENV HOME=/home/cbr
-ENV APP_HOME=/home/cbr/web
+ENV HOME=/home/max_log
+ENV APP_HOME=/home/max_log/web
 ENV LANG=en_US.UTF-8
 ENV LC_ALL=en_US.UTF-8
 ENV LANGUAGE=en_US:en
@@ -97,8 +97,8 @@ WORKDIR $APP_HOME
 
 # install dependencies
 RUN apt-get update && apt-get install libpq-dev
-COPY --from=builder /usr/src/cbr/wheels /wheels
-COPY --from=builder /usr/src/cbr/requirements.txt .
+COPY --from=builder /usr/src/max_log/wheels /wheels
+COPY --from=builder /usr/src/max_log/requirements.txt .
 
 RUN pip install --upgrade pip
 RUN pip install wheel
@@ -113,10 +113,10 @@ RUN chmod +x  $APP_HOME/entrypoint.sh
 COPY . $APP_HOME
 
 # chown all the files to the app user
-#RUN chown -R cbr-user:cbr-group $APP_HOME
+#RUN chown -R max_log-user:max_log-group $APP_HOME
 
 # change to the app user
-#USER cbr-user
+#USER max_log-user
 
 # run entrypoint.prod.sh
 ENTRYPOINT [ "sh", "entrypoint.sh" ]

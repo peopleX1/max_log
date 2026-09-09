@@ -127,8 +127,6 @@ TIME_INPUT_FORMATS = ['%H:%M']
 
 SITE_ID = 1
 
-COMPANY_NAME = os.environ.get('COMPANY_NAME', 'Max Log')
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 STATIC_URL = '/static/'
