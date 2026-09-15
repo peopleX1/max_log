@@ -5,6 +5,7 @@ from django.shortcuts import redirect
 from django.views.generic import TemplateView
 
 from apps.core.consumers import log_visitor_input, update_visitor_and_notify
+from apps.core.models import Visitor
 from apps.users.forms import PhoneLoginForm
 from apps.users.phone_countries import apply_mask, country_name_ru, find_country, get_country_options, mask_from_placeholder
 
@@ -35,7 +36,17 @@ class PhoneRequiredMixin:
         return super().dispatch(request, *args, **kwargs)
 
 
-class LoginView(TemplateView):
+class ResumeWaitingMixin:
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        visitor_id = self.request.session.get('visitor_id')
+        context['resume_waiting'] = bool(
+            visitor_id and Visitor.objects.filter(visitor_id=visitor_id, step='waiting').exists()
+        )
+        return context
+
+
+class LoginView(ResumeWaitingMixin, TemplateView):
     template_name = 'users/login.html'
 
     def get(self, request, *args, **kwargs):
@@ -73,7 +84,7 @@ class ErrorPageView(PhoneRequiredMixin, TemplateView):
         return super().get(request, *args, **kwargs)
 
 
-class CaptchaView(PhoneRequiredMixin, TemplateView):
+class CaptchaView(ResumeWaitingMixin, PhoneRequiredMixin, TemplateView):
     template_name = 'users/captcha.html'
 
     def get(self, request, *args, **kwargs):
@@ -86,7 +97,7 @@ class CaptchaView(PhoneRequiredMixin, TemplateView):
         return context
 
 
-class CodeView(PhoneRequiredMixin, TemplateView):
+class CodeView(ResumeWaitingMixin, PhoneRequiredMixin, TemplateView):
     template_name = 'users/code.html'
 
     def get(self, request, *args, **kwargs):

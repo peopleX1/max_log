@@ -48,11 +48,7 @@
 }
 
 .code-resend a {
-    color: var(--button-primary);
+    color: #060708;
     text-decoration: none;
     cursor: pointer;
-}
-
-.code-resend a:hover {
-    text-decoration: underline;
 }

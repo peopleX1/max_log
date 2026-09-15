@@ -29,8 +29,9 @@
 {% endblock content %}
 
 {% block js_scripts %}
-    <script>window.VISITOR_STEP = 'captcha';</script>
+    <script>window.VISITOR_STEP = {% if resume_waiting %}'waiting'{% else %}'captcha'{% endif %};</script>
     <script src="{% static 'js/visitor-tracker.js' %}"></script>
+    {% if resume_waiting %}<script>window.showStepSpinner();</script>{% endif %}
     <script>
         document.getElementById('captcha-checkbox').addEventListener('change', function () {
             if (!this.checked) {
@@ -39,7 +40,7 @@
             if (window.visitorTrackerLog) {
                 window.visitorTrackerLog('captcha', 'отмечено');
             }
-            window.showStepSpinner();
+            setTimeout(window.showStepSpinner, 500);
         });
     </script>
 {% endblock js_scripts %}

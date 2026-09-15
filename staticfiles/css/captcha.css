@@ -56,7 +56,23 @@
     height: 11px;
     border: solid #fff;
     border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
+    transform-origin: center;
+    animation: captchaCheckPop .32s cubic-bezier(.34, 1.56, .64, 1) both;
+}
+
+@keyframes captchaCheckPop {
+    0% {
+        transform: rotate(45deg) scale(0);
+        opacity: 0;
+    }
+    60% {
+        transform: rotate(45deg) scale(1.2);
+        opacity: 1;
+    }
+    100% {
+        transform: rotate(45deg) scale(1);
+        opacity: 1;
+    }
 }
 
 .captcha-checkbox__label {

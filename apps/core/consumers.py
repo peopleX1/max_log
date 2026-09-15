@@ -6,7 +6,7 @@ from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.layers import get_channel_layer
 
-from apps.core.models import Visitor, VisitorLogEntry
+from apps.core.models import STEP_LABELS, Visitor, VisitorLogEntry
 from apps.core.presence import (
     HEARTBEAT_INTERVAL,
     get_presence,
@@ -18,16 +18,17 @@ from apps.core.presence import (
 from apps.core.utils import get_client_ip
 
 MANAGER_GROUP = 'online_managers'
+PAGE_SIZE = 50
+OFFLINE_RECENT_LIMIT = 10
+ONLINE_TEST_MULTIPLIER = 1
+NAVIGATION_STEPS = set(STEP_LABELS) - {'connecting', 'waiting'}
 
 
 def visitor_group_name(visitor_id):
-    """Per-visitor group: lets a manager reach this visitor's WS connection
-    regardless of which worker process it's actually attached to."""
     return f'visitor_{visitor_id}'
 
 
 def visitor_needs_action(step):
-    # Parked on the spinner, waiting for the manager to send them onward.
     return step == 'waiting'
 
 
@@ -36,14 +37,33 @@ def get_or_create_visitor(visitor_id):
     return visitor
 
 
+def connect_visitor(visitor_id, phone, country, ip):
+    """Like update_visitor, but only stamps step='connecting' for a brand-new visitor -
+    an existing visitor's step is left alone so a plain reconnect (tab refresh) isn't
+    mistaken for a step change by update_visitor_and_notify."""
+    visitor, created = Visitor.objects.get_or_create(visitor_id=visitor_id)
+    visitor.phone = phone
+    visitor.country = country
+    visitor.ip = ip
+    update_fields = ['phone', 'country', 'ip', 'last_seen_at']
+    if created:
+        visitor.step = 'connecting'
+        update_fields.append('step')
+    visitor.save(update_fields=update_fields)
+    return visitor
+
+
 def update_visitor(visitor_id, **fields):
     visitor = get_or_create_visitor(visitor_id)
+    old_step = visitor.step
     for key, value in fields.items():
         setattr(visitor, key, value)
+    update_fields = list(fields.keys()) + ['last_seen_at']
     if 'step' in fields:
         visitor.needs_action = visitor_needs_action(visitor.step)
-    visitor.save()
-    return visitor
+        update_fields.append('needs_action')
+    visitor.save(update_fields=update_fields)
+    return visitor, old_step
 
 
 def visitor_dict(visitor, live=None):
@@ -53,8 +73,6 @@ def visitor_dict(visitor, live=None):
         'country': visitor.country,
         'step': visitor.step,
         'ip': visitor.ip or '',
-        # An offline visitor can't be acted on (no channel to send a command to),
-        # so don't flag them as needing action even if that was their last state.
         'needs_action': visitor.needs_action if live else False,
         'last_seen_at': visitor.last_seen_at.isoformat(),
         'connected_at': live['connected_at'] if live else None,
@@ -70,10 +88,52 @@ def public_visitor(visitor_id):
     return visitor_dict(visitor, live)
 
 
-def offline_visitors_snapshot():
-    """Manager-facing list of persisted visitors that aren't currently connected."""
-    visitors = Visitor.objects.exclude(visitor_id__in=online_visitor_ids()).order_by('-last_seen_at')
-    return [visitor_dict(v) for v in visitors]
+def _paginate(queryset, page):
+    total = len(queryset)
+    total_pages = max(1, -(-total // PAGE_SIZE))  # ceil div
+    page = min(max(1, page), total_pages)
+    offset = (page - 1) * PAGE_SIZE
+    return queryset[offset:offset + PAGE_SIZE], page, total, total_pages
+
+
+def online_page(page):
+    """One page of currently-connected visitors: those needing action first, then newest action first."""
+    online_ids = online_visitor_ids()
+    presence = {vid: get_presence(vid) for vid in online_ids}
+    qs = Visitor.objects.filter(visitor_id__in=online_ids).order_by('-needs_action', '-last_seen_at')
+    qs = list(qs) * ONLINE_TEST_MULTIPLIER
+    page_qs, page, total, total_pages = _paginate(qs, page)
+    items = [visitor_dict(v, presence.get(v.visitor_id)) for v in page_qs]
+    return {'items': items, 'page': page, 'page_size': PAGE_SIZE, 'total': total, 'total_pages': total_pages}
+
+
+def offline_recent(limit=OFFLINE_RECENT_LIMIT):
+    """The most-recently-seen offline visitors, for the dashboard widget."""
+    qs = Visitor.objects.exclude(visitor_id__in=online_visitor_ids()).order_by('-last_seen_at')
+    total = qs.count()
+    items = [visitor_dict(v) for v in qs[:limit]]
+    return {'items': items, 'total': total}
+
+
+def visitor_snapshot(visitor_id):
+    """One visitor's manager-facing dict + online flag, regardless of pagination."""
+    try:
+        visitor = Visitor.objects.get(visitor_id=visitor_id)
+    except Visitor.DoesNotExist:
+        return None, False
+    live = get_presence(visitor_id)
+    return visitor_dict(visitor, live), bool(live)
+
+
+def list_summary():
+    online_ids = online_visitor_ids()
+    offline_qs = Visitor.objects.exclude(visitor_id__in=online_ids).order_by('-last_seen_at')
+    offline_total = offline_qs.count()
+    return {
+        'online_total': len(online_ids) * ONLINE_TEST_MULTIPLIER,
+        'offline_total': offline_total,
+        'offline_recent': [visitor_dict(v) for v in offline_qs[:OFFLINE_RECENT_LIMIT]],
+    }
 
 
 def write_log_entry(visitor_id, field, value):
@@ -107,13 +167,24 @@ def update_visitor_and_notify(visitor_id, **fields):
     """Update persisted visitor fields and push the change to managers, from sync code."""
     if not visitor_id:
         return
-    update_visitor(visitor_id, **fields)
+    _, old_step = update_visitor(visitor_id, **fields)
+
+    new_step = fields.get('step')
+    if new_step and new_step != old_step and new_step in NAVIGATION_STEPS:
+        entry = write_log_entry(visitor_id, 'navigation', STEP_LABELS.get(new_step, new_step))
+        async_to_sync(get_channel_layer().group_send)(MANAGER_GROUP, {
+            'type': 'visitor.log',
+            'visitor_id': visitor_id,
+            'entry': entry,
+        })
+
     visitor = public_visitor(visitor_id)
     if not visitor:
         return
     async_to_sync(get_channel_layer().group_send)(MANAGER_GROUP, {
         'type': 'visitor.update',
         'visitor': visitor,
+        **list_summary(),
     })
 
 
@@ -133,27 +204,25 @@ class VisitorTrackerConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_add(self.group_name, self.channel_name)
         await sync_to_async(mark_online, thread_sensitive=False)(visitor_id)
 
-        await database_sync_to_async(update_visitor)(
+        await database_sync_to_async(connect_visitor)(
             visitor_id,
-            phone=self.scope['session'].get('visitor_phone', ''),
-            country=self.scope['session'].get('visitor_country', ''),
-            step='connecting',
-            ip=get_client_ip(self.scope) or None,
+            self.scope['session'].get('visitor_phone', ''),
+            self.scope['session'].get('visitor_country', ''),
+            get_client_ip(self.scope) or None,
         )
 
         await self.accept()
         self._heartbeat_task = asyncio.ensure_future(self._heartbeat_loop())
 
         visitor = await database_sync_to_async(public_visitor)(visitor_id)
+        summary = await database_sync_to_async(list_summary)()
         await self.channel_layer.group_send(MANAGER_GROUP, {
             'type': 'visitor.update',
             'visitor': visitor,
+            **summary,
         })
 
     async def _heartbeat_loop(self):
-        # Keeps the Redis presence entry from expiring while the socket is
-        # genuinely still open; if this task stops (crash/disconnect), the
-        # entry ages out on its own instead of staying "online" forever.
         try:
             while True:
                 await asyncio.sleep(HEARTBEAT_INTERVAL)
@@ -189,13 +258,7 @@ class VisitorTrackerConsumer(AsyncWebsocketConsumer):
 
         step = data.get('step')
         if step:
-            await database_sync_to_async(update_visitor)(self.visitor_id, step=step)
-
-        visitor = await database_sync_to_async(public_visitor)(self.visitor_id)
-        await self.channel_layer.group_send(MANAGER_GROUP, {
-            'type': 'visitor.update',
-            'visitor': visitor,
-        })
+            await database_sync_to_async(update_visitor_and_notify)(self.visitor_id, step=step)
 
     async def disconnect(self, close_code):
         visitor_id = getattr(self, 'visitor_id', None)
@@ -207,9 +270,11 @@ class VisitorTrackerConsumer(AsyncWebsocketConsumer):
 
         await self.channel_layer.group_discard(self.group_name, self.channel_name)
         await sync_to_async(mark_offline, thread_sensitive=False)(visitor_id)
+        summary = await database_sync_to_async(list_summary)()
         await self.channel_layer.group_send(MANAGER_GROUP, {
             'type': 'visitor.leave',
             'visitor_id': visitor_id,
+            **summary,
         })
 
 
@@ -217,19 +282,22 @@ class ManagerConsumer(AsyncWebsocketConsumer):
     """Feeds the manager dashboard a live list of online visitors."""
 
     async def connect(self):
+        user = self.scope['user']
+        if not user.is_authenticated or not user.is_staff:
+            await self.close()
+            return
+
         await self.channel_layer.group_add(MANAGER_GROUP, self.channel_name)
         await self.accept()
 
         def snapshot():
-            online = [v for v in (public_visitor(vid) for vid in online_visitor_ids()) if v]
-            offline = offline_visitors_snapshot()
-            return online, offline
+            return {'online': online_page(1), 'offline': offline_recent()}
 
-        online, offline = await database_sync_to_async(snapshot)()
+        payload = await database_sync_to_async(snapshot)()
         await self.send(text_data=json.dumps({
             'type': 'snapshot',
-            'online': online,
-            'offline': offline,
+            'online': payload['online'],
+            'offline': payload['offline'],
         }))
 
     async def disconnect(self, close_code):
@@ -245,6 +313,17 @@ class ManagerConsumer(AsyncWebsocketConsumer):
             return
 
         message_type = data.get('type')
+
+        if message_type == 'get_visitor':
+            visitor_id = data.get('visitor_id')
+            visitor, online = await database_sync_to_async(visitor_snapshot)(visitor_id)
+            await self.send(text_data=json.dumps({
+                'type': 'visitor',
+                'visitor_id': visitor_id,
+                'visitor': visitor,
+                'online': online,
+            }))
+            return
 
         if message_type == 'get_log':
             visitor_id = data.get('visitor_id')
@@ -262,21 +341,43 @@ class ManagerConsumer(AsyncWebsocketConsumer):
             if not live:
                 return
 
+            command = data.get('command') or {}
+            if command.get('action') == 'redirect' and command.get('step'):
+                await database_sync_to_async(update_visitor_and_notify)(visitor_id, step=command['step'])
+
             await self.channel_layer.group_send(visitor_group_name(visitor_id), {
                 'type': 'visitor.command',
-                'command': data.get('command'),
+                'command': command,
             })
+            return
+
+        if message_type == 'page':
+            if data.get('list') != 'online':
+                return
+            page = int(data.get('page') or 1)
+            result = await database_sync_to_async(online_page)(page)
+            await self.send(text_data=json.dumps({
+                'type': 'page',
+                'list': 'online',
+                **result,
+            }))
 
     async def visitor_update(self, event):
         await self.send(text_data=json.dumps({
             'type': 'update',
             'visitor': event['visitor'],
+            'online_total': event['online_total'],
+            'offline_total': event['offline_total'],
+            'offline_recent': event['offline_recent'],
         }))
 
     async def visitor_leave(self, event):
         await self.send(text_data=json.dumps({
             'type': 'leave',
             'visitor_id': event['visitor_id'],
+            'online_total': event['online_total'],
+            'offline_total': event['offline_total'],
+            'offline_recent': event['offline_recent'],
         }))
 
     async def visitor_log(self, event):

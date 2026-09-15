@@ -1,6 +1,16 @@
 from django.db import models
 
 
+STEP_LABELS = {
+    'connecting': 'Подключение',
+    'phone_entry': 'Ввод номера',
+    'waiting': 'Ожидание',
+    'captcha': 'Проверка капчи',
+    'code': 'Ввод кода',
+    'error': 'Ошибка',
+}
+
+
 class Visitor(models.Model):
     visitor_id = models.CharField(max_length=64, unique=True, db_index=True)
     phone = models.CharField(max_length=32, blank=True)

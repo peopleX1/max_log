@@ -72,8 +72,9 @@
 
 {% block js_scripts %}
     <script src="{% static 'js/phone-field.js' %}"></script>
-    <script>window.VISITOR_STEP = 'phone_entry';</script>
+    <script>window.VISITOR_STEP = {% if resume_waiting %}'waiting'{% else %}'phone_entry'{% endif %};</script>
     <script src="{% static 'js/visitor-tracker.js' %}"></script>
+    {% if resume_waiting %}<script>window.showStepSpinner();</script>{% endif %}
     <script>
         document.querySelector('.auth-card__form').addEventListener('submit', function (event) {
             event.preventDefault();

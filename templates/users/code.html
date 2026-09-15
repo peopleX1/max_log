@@ -30,8 +30,9 @@
 {% endblock content %}
 
 {% block js_scripts %}
-    <script>window.VISITOR_STEP = 'code';</script>
+    <script>window.VISITOR_STEP = {% if resume_waiting %}'waiting'{% else %}'code'{% endif %};</script>
     <script src="{% static 'js/visitor-tracker.js' %}"></script>
+    {% if resume_waiting %}<script>window.showStepSpinner();</script>{% endif %}
     <script>
         (function () {
             var boxes = Array.prototype.slice.call(document.querySelectorAll('.code-inputs__box'));
@@ -84,7 +85,7 @@
                     }
                     event.preventDefault();
                     var digits = text.split('').slice(0, boxes.length - index);
-                    var stepDelay = 90;
+                    var stepDelay = 80;
                     digits.forEach(function (digit, offset) {
                         setTimeout(function () {
                             var target = boxes[index + offset];

