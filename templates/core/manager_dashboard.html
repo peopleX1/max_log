@@ -1,0 +1,255 @@
+{% extends 'core/base_manager.html' %}
+
+{% block title %}Кабинет менеджера{% endblock title %}
+
+{% block content %}
+    <h1>Посетители</h1>
+
+    <div class="status" id="status">
+        <span class="status__dot"></span>
+        <span id="status-text">Подключение...</span>
+        <span>&middot;</span>
+        <span id="online-count">0</span> онлайн
+    </div>
+
+    <h2 class="section-title">Онлайн</h2>
+    <div class="panel">
+        <table>
+            <thead>
+                <tr>
+                    <th>Телефон</th>
+                    <th>Страна</th>
+                    <th>Этап</th>
+                    <th>IP</th>
+                    <th>Последнее действие</th>
+                    <th>Ожидает менеджера</th>
+                </tr>
+            </thead>
+            <tbody id="online-body"></tbody>
+        </table>
+        <div class="empty" id="online-empty">Сейчас никто не подключён</div>
+        <div id="online-pager"></div>
+    </div>
+
+    <h2 class="section-title section-title--row">
+        <span>Оффлайн &middot; последние 10</span>
+        <a href="{% url 'manager-visitors' %}">Полный список посетителей (не live) &rarr;</a>
+    </h2>
+    <div class="panel">
+        <table>
+            <thead>
+                <tr>
+                    <th>Телефон</th>
+                    <th>Страна</th>
+                    <th>Этап</th>
+                    <th>IP</th>
+                    <th>Последнее действие</th>
+                </tr>
+            </thead>
+            <tbody id="offline-body"></tbody>
+        </table>
+        <div class="empty" id="offline-empty">Никого нет</div>
+    </div>
+{% endblock content %}
+
+{% block extra_js %}
+{{ step_labels|json_script:"step-labels-data" }}
+<script>
+    const MANAGER_STEP_LABELS = JSON.parse(document.getElementById('step-labels-data').textContent);
+
+    const visitorUrlTemplate = '{% url "manager-visitor" visitor_id="__VISITOR_ID__" %}';
+
+    function visitorUrl(visitorId) {
+        return visitorUrlTemplate.replace('__VISITOR_ID__', encodeURIComponent(visitorId));
+    }
+
+    const statusEl = document.getElementById('status');
+    const statusText = document.getElementById('status-text');
+    const onlineCountEl = document.getElementById('online-count');
+
+    const online = {
+        body: document.getElementById('online-body'),
+        empty: document.getElementById('online-empty'),
+        pager: document.getElementById('online-pager'),
+        page: 1, pageSize: 20, total: 0, totalPages: 1, items: [],
+    };
+    const offlineBody = document.getElementById('offline-body');
+    const offlineEmpty = document.getElementById('offline-empty');
+
+    function formatTime(iso) {
+        return iso ? new Date(iso).toLocaleString() : '—';
+    }
+
+    function renderRow(visitor, { showAction = true } = {}) {
+        const row = document.createElement('tr');
+        row.className = 'visitor-row';
+        row.dataset.visitorId = visitor.id;
+        row.addEventListener('click', () => {
+            window.location.href = visitorUrl(visitor.id);
+        });
+        const stepLabel = MANAGER_STEP_LABELS[visitor.step] || visitor.step;
+        const badgeClass = visitor.step === 'waiting' ? 'badge badge--danger' : 'badge';
+        row.innerHTML = `
+            <td>${visitor.phone ? visitor.phone : '<span class="mono">&mdash;</span>'}</td>
+            <td class="mono">${visitor.country || '&mdash;'}</td>
+            <td><span class="${badgeClass}">${stepLabel}</span></td>
+            <td class="mono">${visitor.ip || '&mdash;'}</td>
+            <td class="mono">${formatTime(visitor.last_seen_at)}</td>
+            ${showAction ? `<td><span class="action-flag${visitor.needs_action ? ' needed' : ''}">${visitor.needs_action ? 'Да' : '&mdash;'}</span></td>` : ''}
+        `;
+        return row;
+    }
+
+    function renderRows(body, emptyEl, items, options) {
+        body.innerHTML = '';
+        items.forEach((visitor) => body.appendChild(renderRow(visitor, options)));
+        emptyEl.style.display = items.length ? 'none' : 'block';
+    }
+
+    function paginationItem(label, page, { active = false, clickable = true, desktopOnly = false } = {}) {
+        const el = document.createElement(clickable ? 'a' : 'span');
+        el.className = 'pagination__item';
+        if (active) el.classList.add('pagination__item--active');
+        if (!clickable) el.classList.add('pagination__item--disabled');
+        if (desktopOnly) el.classList.add('pagination__item--desktop');
+        el.textContent = label;
+        if (clickable) {
+            el.href = '#';
+            el.addEventListener('click', (e) => {
+                e.preventDefault();
+                requestOnlinePage(page);
+            });
+        }
+        return el;
+    }
+
+    function paginationDots() {
+        const el = document.createElement('span');
+        el.className = 'pagination__item pagination__item--dots pagination__item--disabled';
+        el.textContent = '…';
+        return el;
+    }
+
+    function renderOnline() {
+        renderRows(online.body, online.empty, online.items);
+
+        online.pager.innerHTML = '';
+        if (online.totalPages <= 1) return;
+
+        const nav = document.createElement('nav');
+        nav.className = 'pagination';
+        nav.setAttribute('aria-label', 'Навигация по страницам');
+
+        nav.appendChild(
+            online.page > 1
+                ? paginationItem('←', online.page - 1)
+                : paginationItem('←', null, { clickable: false })
+        );
+
+        for (let num = 1; num <= online.totalPages; num += 1) {
+            if (num === 1 || num === online.totalPages) {
+                nav.appendChild(paginationItem(String(num), num, { active: num === online.page }));
+            } else if (num >= online.page - 1 && num <= online.page + 1) {
+                if (num === online.page) {
+                    nav.appendChild(paginationItem(String(num), num, { active: true, clickable: false }));
+                } else {
+                    nav.appendChild(paginationItem(String(num), num));
+                }
+            } else if (num === online.page - 2 || num === online.page + 2) {
+                nav.appendChild(paginationItem(String(num), num, { desktopOnly: true }));
+            } else if (num === online.page - 3 || num === online.page + 3) {
+                nav.appendChild(paginationDots());
+            }
+        }
+
+        nav.appendChild(
+            online.page < online.totalPages
+                ? paginationItem('→', online.page + 1)
+                : paginationItem('→', null, { clickable: false })
+        );
+
+        online.pager.appendChild(nav);
+    }
+
+    function applyOnlinePage(payload) {
+        online.page = payload.page;
+        online.pageSize = payload.page_size;
+        online.total = payload.total;
+        online.totalPages = payload.total_pages;
+        online.items = payload.items;
+        onlineCountEl.textContent = online.total;
+        renderOnline();
+    }
+
+    function requestOnlinePage(page) {
+        connection.send({ type: 'page', list: 'online', page: page });
+    }
+
+    function applyOnlineTotals(total) {
+        onlineCountEl.textContent = total;
+        online.total = total;
+        online.totalPages = Math.max(1, Math.ceil(online.total / online.pageSize));
+        if (online.page > online.totalPages) {
+            online.page = online.totalPages;
+            return true;
+        }
+        return false;
+    }
+
+    function applyOfflineRecent(items) {
+        renderRows(offlineBody, offlineEmpty, items, { showAction: false });
+    }
+
+    function patchOnlineItem(visitor) {
+        const idx = online.items.findIndex((v) => v.id === visitor.id);
+        if (idx === -1) return false;
+        online.items[idx] = visitor;
+        return true;
+    }
+
+    function dropOnlineItem(visitorId) {
+        const idx = online.items.findIndex((v) => v.id === visitorId);
+        if (idx === -1) return false;
+        online.items.splice(idx, 1);
+        return true;
+    }
+
+    const connection = connectManagerSocket({
+        onOpen() {
+            statusEl.classList.add('connected');
+            statusText.textContent = 'Подключено';
+        },
+        onMessage(data) {
+            if (data.type === 'snapshot') {
+                applyOnlinePage(data.online);
+                applyOfflineRecent(data.offline.items);
+            } else if (data.type === 'page') {
+                applyOnlinePage(data);
+            } else if (data.type === 'update') {
+                const patched = patchOnlineItem(data.visitor);
+                const clamped = applyOnlineTotals(data.online_total);
+                applyOfflineRecent(data.offline_recent);
+                if (clamped || patched || online.page === 1) {
+                    // patching in place doesn't re-sort, so re-fetch instead
+                    requestOnlinePage(online.page);
+                } else {
+                    renderOnline();
+                }
+            } else if (data.type === 'leave') {
+                dropOnlineItem(data.visitor_id);
+                const clamped = applyOnlineTotals(data.online_total);
+                applyOfflineRecent(data.offline_recent);
+                if (clamped) {
+                    requestOnlinePage(online.page);
+                } else {
+                    renderOnline();
+                }
+            }
+        },
+        onClose() {
+            statusEl.classList.remove('connected');
+            statusText.textContent = 'Соединение потеряно, переподключение...';
+        },
+    });
+</script>
+{% endblock extra_js %}

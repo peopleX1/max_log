@@ -1,0 +1,75 @@
+{% extends 'core/base_manager.html' %}
+
+{% block title %}Все посетители{% endblock title %}
+
+{% block content %}
+    <div class="back-links">
+        <a class="back" href="{% url 'manager-dashboard' %}">&larr; Онлайн</a>
+    </div>
+
+    <h1>Все посетители</h1>
+    <p class="subtitle">Всего {{ page_obj.paginator.count }}</p>
+
+    <form method="get" class="filters">
+        <input type="hidden" name="sort" value="{{ sort }}">
+        <div class="filters__field">
+            <label for="f-phone">Телефон</label>
+            <input type="text" id="f-phone" name="phone" value="{{ filters.phone }}" placeholder="Поиск по телефону">
+        </div>
+        <div class="filters__field">
+            <label for="f-country">Страна</label>
+            <input type="text" id="f-country" name="country" value="{{ filters.country }}" placeholder="Поиск по стране">
+        </div>
+        <div class="filters__field">
+            <label for="f-step">Этап</label>
+            <select id="f-step" name="step">
+                <option value="">Все этапы</option>
+                {% for value, label in step_choices %}
+                <option value="{{ value }}"{% if filters.step == value %} selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="filters__field">
+            <label for="f-ip">IP</label>
+            <input type="text" id="f-ip" name="ip" value="{{ filters.ip }}" placeholder="Поиск по IP">
+        </div>
+        <div class="filters__actions">
+            <button type="submit">Применить</button>
+            {% if filters.phone or filters.country or filters.step or filters.ip %}
+            <a class="filters__reset" href="{% url 'manager-visitors' %}">Сбросить</a>
+            {% endif %}
+        </div>
+    </form>
+
+    <div class="panel">
+        <table>
+            <thead>
+                <tr>
+                    <th><a class="th-sort" href="{{ sort_columns.online.url }}">Онлайн <span class="th-sort__arrow">{{ sort_columns.online.arrow }}</span></a></th>
+                    <th><a class="th-sort" href="{{ sort_columns.phone.url }}">Телефон <span class="th-sort__arrow">{{ sort_columns.phone.arrow }}</span></a></th>
+                    <th><a class="th-sort" href="{{ sort_columns.country.url }}">Страна <span class="th-sort__arrow">{{ sort_columns.country.arrow }}</span></a></th>
+                    <th><a class="th-sort" href="{{ sort_columns.step.url }}">Этап <span class="th-sort__arrow">{{ sort_columns.step.arrow }}</span></a></th>
+                    <th><a class="th-sort" href="{{ sort_columns.ip.url }}">IP <span class="th-sort__arrow">{{ sort_columns.ip.arrow }}</span></a></th>
+                    <th><a class="th-sort" href="{{ sort_columns.last_seen_at.url }}">Последнее действие <span class="th-sort__arrow">{{ sort_columns.last_seen_at.arrow }}</span></a></th>
+                    <th><a class="th-sort" href="{{ sort_columns.needs_action.url }}">Ожидает менеджера <span class="th-sort__arrow">{{ sort_columns.needs_action.arrow }}</span></a></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                <tr class="visitor-row" onclick="window.location.href='{% url 'manager-visitor' visitor_id=row.visitor_id %}{% if list_qs %}?back={{ list_qs|urlencode }}{% endif %}'">
+                    <td>{% if row.is_online %}<span class="badge badge--online">Онлайн</span>{% else %}<span class="mono">&mdash;</span>{% endif %}</td>
+                    <td>{% if row.phone %}{{ row.phone }}{% else %}<span class="mono">&mdash;</span>{% endif %}</td>
+                    <td class="mono">{{ row.country|default:"—" }}</td>
+                    <td><span class="badge{% if row.is_waiting %} badge--danger{% endif %}">{{ row.step_label }}</span></td>
+                    <td class="mono">{{ row.ip|default:"—" }}</td>
+                    <td class="mono">{{ row.last_seen_at|date:"d.m.Y H:i" }}</td>
+                    <td><span class="action-flag{% if row.needs_action %} needed{% endif %}">{% if row.needs_action %}Да{% else %}&mdash;{% endif %}</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="empty" {% if rows %}style="display:none"{% endif %}>Никого нет</div>
+
+        {% include 'includes/pagination.html' %}
+    </div>
+{% endblock content %}

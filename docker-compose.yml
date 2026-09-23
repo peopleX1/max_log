@@ -3,7 +3,8 @@ version: '3.9'
 services:
   db:
     image: postgres:14.16
-    container_name: cbr_db
+    container_name: max_log_db
+    restart: always
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
@@ -13,11 +14,11 @@ services:
       context: .
       dockerfile: Dockerfile
     restart: always
-    command: bash -c "service cron start && python3 manage.py crontab add && daphne -b 0.0.0.0 -p 8000 config.asgi:application"
-    container_name: cbr_web
+    command: daphne -b 0.0.0.0 -p 8000 config.asgi:application
+    container_name: max_log_web
     volumes:
-      - static_volume:/home/cbr/web/static
-      - media_volume:/home/cbr/web/media
+      - static_volume:/home/max_log/web/static
+      - media_volume:/home/max_log/web/media
     expose:
       - 8000
     env_file:
@@ -28,17 +29,18 @@ services:
   nginx:
     build: ./nginx
     restart: always
-    container_name: cbr_nginx
+    container_name: max_log_nginx
     volumes:
-      - static_volume:/home/cbr/web/static
-      - media_volume:/home/cbr/web/media
+      - static_volume:/home/max_log/web/static
+      - media_volume:/home/max_log/web/media
     ports:
       - 8000:80
     depends_on:
       - web
   redis:
     image: redis:latest
-    container_name: cbr_redis
+    container_name: max_log_redis
+    restart: always
     volumes:
       - redisdata:/data
 

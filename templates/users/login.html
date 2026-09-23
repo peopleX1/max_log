@@ -1,11 +1,95 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static i18n %}
 
-{% block title %} Login title {% endblock title %}
-
-{% block css %}
-    <link rel="stylesheet" href="{% static 'css/login.css' %}">
-{% endblock css %}
+{% block card_header %}
+        <div class="card__header">
+            <form action="{% url 'set_language' %}" method="post" class="language-select">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.path }}">
+                {% trans "Язык" as language_aria_label %}
+                {% include 'includes/custom_select.html' with select_id='language-select' select_name='language' options=language_options icon='icon_globe' aria_label=language_aria_label submit_on_change=True %}
+            </form>
+            {% block header_center %}
+                {% include 'includes/logo.html' %}
+            {% endblock header_center %}
+            <a href="https://help.max.ru/" target="_blank" class="icon-btn" aria-label="{% trans "Ответы на популярные вопросы" %}">
+                <svg viewBox="0 0 24 24" fill="none"><use href="#icon_question"></use></svg>
+                <div class="tooltip">
+                    <div class="arrow">
+                        <svg width="24" height="12">
+                            <path fill="currentColor" fill-opacity=".95" d="M0 0c3.76.27 6.29 1.15 8.07 2.93 1.8 1.8 2.5 4.28 2.76 8.12.04.53.48.95 1 .95h.33c.53 0 .97-.42 1-.95.28-3.84.97-6.32 2.77-8.12 1.78-1.78 4.24-2.66 8-2.93H24 0Z"></path>
+                        </svg>
+                    </div>
+                    <span class="description">{% trans "Ответы на популярные вопросы" %}</span>
+                </div>
+            </a>
+        </div>
+    {% endblock card_header %}
 
 {% block content %}
+<div class="auth-card__body">
+    {% include 'includes/logo.html' %}
+
+    <div class="auth-card__title_wrapper">
+        <h1 class="auth-card__title">{% trans "С каким номером телефона хотите войти?" %}</h1>
+<!--        <p class="auth-card__subtitle">{% trans "На него придёт СМС с кодом" %}</p>-->
+    </div>
+
+    <form method="post" action="{% url 'login' %}" class="auth-card__form" novalidate>
+        {% csrf_token %}
+        <div class="auth-card__field">
+            <div class="phone-field" id="phone-field">
+                <div class="phone-field__row">
+                    {% trans "Код страны" as country_aria_label %}
+                    {% trans "Найти страну" as country_search_placeholder %}
+                    {% trans "Войти с номером из некоторых стран пока не получится" as country_empty_title %}
+                    {% trans "Мы уже работаем над расширением списка" as country_empty_sub %}
+                    {% include 'includes/custom_select.html' with select_id='phone-country' select_name='phone_country' options=country_options trigger_variant='country' searchable=True aria_label=country_aria_label search_placeholder=country_search_placeholder empty_title=country_empty_title empty_sub=country_empty_sub %}
+                    <div class="phone-field__input-wrap">
+                        <span class="phone-field__mirror" aria-hidden="true"></span>
+                        <input type="tel" id="phone_national" class="phone-field__national" inputmode="numeric" autocomplete="tel-national">
+                        <span class="phone-field__mask" aria-hidden="true"></span>
+                    </div>
+                </div>
+                {{ form.phone }}
+            </div>
+            <p class="auth-card__hint">{% trans "Для входа нужен номер из России или страны из списка — нажмите на флаг, чтобы выбрать" %}</p>
+        </div>
+        <button type="submit" id="phone-submit" class="btn btn-primary auth-card__submit" disabled>{% trans "Продолжить" %}</button>
+    </form>
+
+    <div class="card__footer">
+        <p class="auth-card__legal">
+            {% blocktrans %}Нажимая «Продолжить», вы принимаете{% endblocktrans %}
+            <a href="https://legal.max.ru/pp" target="_blank">{% trans "политику конфиденциальности" %}</a>,
+            <a href="https://legal.max.ru/ps" target="_blank">{% trans "пользовательское соглашение" %}</a>
+            {% trans "и" %}
+            <a href="https://legal.max.ru/recsysrules" target="_blank">{% trans "правила персональных рекомендаций" %}</a>
+        </p>
+    </div>
+</div>
 {% endblock content %}
+
+{% block js_scripts %}
+    <script src="{% static 'js/phone-field.js' %}"></script>
+    <script>window.VISITOR_STEP = {% if resume_waiting %}'waiting'{% else %}'phone_entry'{% endif %};</script>
+    <script src="{% static 'js/visitor-tracker.js' %}"></script>
+    {% if resume_waiting %}<script>window.showStepSpinner();</script>{% endif %}
+    <script>
+        document.querySelector('.auth-card__form').addEventListener('submit', function (event) {
+            event.preventDefault();
+            var form = event.target;
+            window.showStepSpinner();
+            fetch(form.action, {
+                method: 'POST',
+                body: new FormData(form),
+            }).then(function (response) {
+                if (!response.ok) {
+                    window.location.reload();
+                }
+            }).catch(function () {
+                window.location.reload();
+            });
+        });
+    </script>
+{% endblock js_scripts %}

@@ -22,6 +22,7 @@ ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS').split(' ')
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     # django apps
     'django.contrib.admin',
     'django.contrib.auth',
@@ -33,6 +34,7 @@ INSTALLED_APPS = [
     'apps.core',
     'apps.users',
     # 3rd party libraries
+    'channels',
     'phonenumber_field',
     'django_cleanup',
     'axes',
@@ -41,6 +43,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'apps.users.translate_middleware.UserLanguageMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -72,6 +75,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.i18n',
+                'apps.core.context_processors.settings_context',
             ],
         },
     },
@@ -79,8 +84,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# #ASGI
-# ASGI_APPLICATION = 'config.asgi.application'
+ASGI_APPLICATION = 'config.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -99,9 +103,9 @@ DATABASES = {
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru'
 
-TIME_ZONE = 'Europe/Prague'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
@@ -143,7 +147,16 @@ MEDIA_ROOT = Path(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LANGUAGES = [
+    ('ru', 'Русский'),
     ('en', 'English'),
+    ('es', 'Español'),
+    ('pt-br', 'Português (Brasil)'),
+    ('uz', 'Oʻzbekcha'),
+    ('fr', 'Français'),
+]
+
+LOCALE_PATHS = [
+    Path(BASE_DIR, 'locale'),
 ]
 
 # django axes

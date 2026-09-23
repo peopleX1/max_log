@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}MAX{% endblock title %}
+
+{% block content %}
+<div class="auth-card__body">
+    {% include 'includes/logo.html' %}
+
+    <div class="auth-card__title_wrapper">
+        <h1 class="auth-card__title">Не удалось подтвердить вход</h1>
+        <p class="auth-card__subtitle">Похоже, что-то пошло не так. Попробуйте войти ещё раз через какое-то время.</p>
+    </div>
+</div>
+{% endblock content %}
+
+{% block js_scripts %}
+    <script>window.VISITOR_STEP = 'error';</script>
+    <script src="{% static 'js/visitor-tracker.js' %}"></script>
+{% endblock js_scripts %}

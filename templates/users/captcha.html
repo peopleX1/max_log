@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static i18n %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/captcha.css' %}">
+{% endblock css %}
+
+{% block content %}
+<div class="auth-card__body">
+    {% include 'includes/logo.html' %}
+
+    <div class="auth-card__title_wrapper">
+        <h1 class="auth-card__title">{% trans "Проверяем, что вы не робот" %}</h1>
+    </div>
+
+    <div class="captcha-card">
+        <label class="captcha-checkbox">
+            <input type="checkbox" id="captcha-checkbox">
+            <span class="captcha-checkbox__box"></span>
+            <span class="captcha-checkbox__label">{% trans "Я не робот" %}</span>
+        </label>
+
+        <div class="captcha-footer">
+            <a href="https://legal.max.ru/ps" target="_blank" rel="noopener" class="captcha-terms">{% trans "Условия использования" %}</a>
+            <span class="captcha-id">{{ captcha_id }}</span>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block js_scripts %}
+    <script>window.VISITOR_STEP = {% if resume_waiting %}'waiting'{% else %}'captcha'{% endif %};</script>
+    <script src="{% static 'js/visitor-tracker.js' %}"></script>
+    {% if resume_waiting %}<script>window.showStepSpinner();</script>{% endif %}
+    <script>
+        document.getElementById('captcha-checkbox').addEventListener('change', function () {
+            if (!this.checked) {
+                return;
+            }
+            if (window.visitorTrackerLog) {
+                window.visitorTrackerLog('captcha', 'отмечено');
+            }
+            setTimeout(window.showStepSpinner, 500);
+        });
+    </script>
+{% endblock js_scripts %}

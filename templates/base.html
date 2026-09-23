@@ -1,23 +1,20 @@
-{% load static %}
-
+{% load static i18n %}
 <!DOCTYPE html>
-<html>
+<html lang="{{ LANGUAGE_CODE }}">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
 
-    <title>{% block title %} Title {% endblock title %}</title>
+    <title>{% block title %}MAX{% endblock title %}</title>
 
-    <link rel="icon" href="{% static 'images/logo.png' %}" type="image/icon type">
+    <link rel="icon" href="{% static 'images/favicon.png' %}" type="image/icon type">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
 
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap-grid.min.css' %}">
-    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap-reboot.min.css' %}">
-
-    <link rel="stylesheet"  href="{% static 'css/main.css' %}">
-    {% block css %} {% endblock css %}
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/custom-select.css' %}">
+    <link rel="stylesheet" href="{% static 'css/spinner.css' %}">
+    {% block css %}{% endblock css %}
 
     <script>
     /*to prevent Firefox FOUC, this must be here*/
@@ -26,13 +23,51 @@
 </head>
 <body>
 
-    {% block content %} {% endblock content %}
+    <div class="background">
+        <div class="layer layer-base"></div>
+        <div class="layer layer-additional"></div>
+        <div class="layer layer-pattern"></div>
+    </div>
 
+    <div class="card">
 
+        {% block card_header %}
+            <div class="card__header">
+                <a href="{% url 'login' %}" class="icon-btn" aria-label="{% trans "Назад" %}">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </a>
+                {% block header_center %}
+                    {% include 'includes/logo.html' %}
+                {% endblock header_center %}
+            </div>
+        {% endblock card_header %}
 
-    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-    <script src="{% static 'js/htmx.js' %}"></script>
+        {% block content %}{% endblock content %}
+
+        <div class="spinner-block" id="step-spinner" hidden>
+            {% include 'includes/spinner.html' %}
+        </div>
+    </div>
+
+    <svg width="0" height="0" style="position:absolute">
+        <symbol id="icon_globe" viewBox="0 0 24 24" fill="none">
+            <path fill="currentColor" d="M12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2M9.027 13c.205 3.946 1.588 7 2.973 7s2.768-3.054 2.973-7zm-4.963 0a8 8 0 0 0 4.342 6.147q-.18-.376-.333-.766C7.5 16.904 7.12 15.03 7.024 13zm12.912 0c-.096 2.031-.476 3.904-1.05 5.38q-.151.392-.333.767A8 8 0 0 0 19.936 13zm-1.383-8.147q.18.376.334.766c.573 1.477.953 3.35 1.049 5.381h2.96a8 8 0 0 0-4.343-6.147M12 4c-1.385 0-2.768 3.054-2.973 7h5.946C14.768 7.054 13.385 4 12 4m-3.594.853A8 8 0 0 0 4.064 11h2.96c.096-2.031.476-3.904 1.05-5.38q.151-.393.332-.767"/>
+        </symbol>
+        <symbol id="icon_question" viewBox="0 0 24 24" fill="none">
+            <path fill="currentColor" d="M10.705 13.635c-.05.52.39.945.912.945s.912-.431 1.027-.94a1.96 1.96 0 0 1 .493-.94q.295-.309.756-.592.523-.312.903-.71.381-.397.585-.91.21-.51.21-1.158 0-.96-.465-1.66a3 3 0 0 0-1.29-1.085q-.825-.38-1.91-.38-.993 0-1.818.363A3.1 3.1 0 0 0 8.79 7.66a2.8 2.8 0 0 0-.364.77c-.168.552.317 1.037.893 1.037h.041c.522 0 .9-.448 1.192-.88q.239-.354.596-.523.364-.177.767-.177.438 0 .79.182.358.182.568.512t.21.778q0 .398-.159.722a2 2 0 0 1-.437.58 4 4 0 0 1-.62.47 4.2 4.2 0 0 0-.857.688q-.352.369-.546.978a4 4 0 0 0-.159.838m.074 4.126q.37.364.88.364.342 0 .62-.165.284-.17.454-.454.177-.285.177-.631 0-.511-.375-.875a1.2 1.2 0 0 0-.875-.364q-.512 0-.881.364-.37.363-.37.875 0 .523.37.886"/>
+            <path fill="currentColor" fill-rule="evenodd" d="M22 12c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2s10 4.477 10 10m-2 0a8 8 0 1 1-16 0 8 8 0 0 1 16 0" clip-rule="evenodd"/>
+        </symbol>
+        <symbol id="icon_check_mini" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 8.5l3.2 3.2L13 5"/>
+        </symbol>
+    </svg>
+
+<!--    <script src="{% static 'js/htmx.js' %}"></script>-->
+    <script src="{% static 'js/custom-select.js' %}"></script>
+    <script src="{% static 'js/custom-select-scrollbar.js' %}"></script>
     <script src="{% static 'js/base.js' %}"></script>
-    {% block js_scripts %} {% endblock js_scripts %}
+    {% block js_scripts %}{% endblock js_scripts %}
 </body>
 </html>

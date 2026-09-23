@@ -1,6 +1,9 @@
 run:
 	python manage.py runserver 0.0.0.0:8000
 
+daphne:
+	daphne -b 0.0.0.0 -p 8000 config.asgi:application
+
 install:
 	pip install -r requirements.txt
 

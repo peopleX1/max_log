@@ -1,0 +1,39 @@
+{% if is_paginated %}
+<nav class="pagination" aria-label="Навигация по страницам">
+
+    {% if page_obj.has_previous %}
+        <a class="pagination__item" href="?page={{ page_obj.previous_page_number }}{{ page_qs_extra }}">&larr;</a>
+    {% else %}
+        <span class="pagination__item pagination__item--disabled">&larr;</span>
+    {% endif %}
+
+    {% for num in paginator.page_range %}
+
+        {% if num == 1 or num == paginator.num_pages %}
+            <a class="pagination__item {% if page_obj.number == num %}pagination__item--active{% endif %}" href="?page={{ num }}{{ page_qs_extra }}">{{ num }}</a>
+
+        {% elif num >= page_obj.number|add:"-1" and num <= page_obj.number|add:"1" %}
+            {% if page_obj.number == num %}
+                <span class="pagination__item pagination__item--active pagination__item--disabled">{{ num }}</span>
+            {% else %}
+                <a class="pagination__item" href="?page={{ num }}{{ page_qs_extra }}">{{ num }}</a>
+            {% endif %}
+
+        {% elif num == page_obj.number|add:"-2" or num == page_obj.number|add:"2" %}
+            <a class="pagination__item pagination__item--desktop" href="?page={{ num }}{{ page_qs_extra }}">{{ num }}</a>
+
+        {% elif num == page_obj.number|add:"-3" or num == page_obj.number|add:"3" %}
+            <span class="pagination__item pagination__item--dots pagination__item--disabled">&hellip;</span>
+
+        {% endif %}
+
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+        <a class="pagination__item" href="?page={{ page_obj.next_page_number }}{{ page_qs_extra }}">&rarr;</a>
+    {% else %}
+        <span class="pagination__item pagination__item--disabled">&rarr;</span>
+    {% endif %}
+
+</nav>
+{% endif %}

@@ -1,0 +1,126 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-08 11:35+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: templates/base.html:40
+msgid "Назад"
+msgstr "Retour"
+
+#: templates/includes/custom_select.html:32
+msgid "Очистить"
+msgstr "Effacer"
+
+#: templates/users/captcha.html:13
+msgid "Проверяем, что вы не робот"
+msgstr "Vérification que vous n'êtes pas un robot"
+
+#: templates/users/captcha.html:20
+msgid "Я не робот"
+msgstr "Je ne suis pas un robot"
+
+#: templates/users/captcha.html:24
+msgid "Условия использования"
+msgstr "Conditions d'utilisation"
+
+#: templates/users/code.html:13
+msgid "Отправили код"
+msgstr "Nous avons envoyé un code"
+
+#: templates/users/code.html:13
+#, python-format
+msgid "на %(phone)s"
+msgstr "au %(phone)s"
+
+#: templates/users/code.html:14
+msgid "Если не получили СМС, проверьте чат «Коды подтверждения» в MAX"
+msgstr ""
+"Si vous n'avez pas reçu le SMS, vérifiez le chat « Codes de confirmation » "
+"dans MAX"
+
+#: templates/users/code.html:27 templates/users/code.html:121
+msgid "Получить новый код можно через"
+msgstr "Vous pouvez obtenir un nouveau code dans"
+
+#: templates/users/code.html:109
+msgid "Отправить код повторно"
+msgstr "Renvoyer le code"
+
+#: templates/users/login.html:9
+msgid "Язык"
+msgstr "Langue"
+
+#: templates/users/login.html:15 templates/users/login.html:23
+msgid "Ответы на популярные вопросы"
+msgstr "Foire Aux Questions"
+
+#: templates/users/login.html:34
+msgid "С каким номером телефона хотите войти?"
+msgstr "Avec quel numéro de téléphone souhaitez-vous vous connecter ?"
+
+#: templates/users/login.html:35
+msgid "На него придёт СМС с кодом"
+msgstr "Il recevra un SMS avec un code"
+
+#: templates/users/login.html:43
+msgid "Код страны"
+msgstr "Indicatif du pays"
+
+#: templates/users/login.html:44
+msgid "Найти страну"
+msgstr "Rechercher un pays"
+
+#: templates/users/login.html:45
+msgid "Войти с номером из некоторых стран пока не получится"
+msgstr "Les numéros de certains pays ne sont pas encore pris en charge"
+
+#: templates/users/login.html:46
+msgid "Мы уже работаем над расширением списка"
+msgstr "Cette liste est en cours d'extension"
+
+#: templates/users/login.html:56
+msgid ""
+"Для входа нужен номер из России или страны из списка — нажмите на флаг, "
+"чтобы выбрать"
+msgstr ""
+"Pour vous connecter, vous avez besoin d'un numéro russe ou d'un pays de la "
+"liste. Appuyez sur un drapeau pour sélectionner"
+
+#: templates/users/login.html:58
+msgid "Продолжить"
+msgstr "Continuer"
+
+#: templates/users/login.html:63
+msgid "Нажимая «Продолжить», вы принимаете"
+msgstr "En appuyant sur « Continuer», vous acceptez"
+
+#: templates/users/login.html:64
+msgid "политику конфиденциальности"
+msgstr "la politique de confidentialité"
+
+#: templates/users/login.html:65
+msgid "пользовательское соглашение"
+msgstr "les conditions d'utilisation"
+
+#: templates/users/login.html:66
+msgid "и"
+msgstr "et"
+
+#: templates/users/login.html:67
+msgid "правила персональных рекомендаций"
+msgstr "règles des recommandations personnalisées"

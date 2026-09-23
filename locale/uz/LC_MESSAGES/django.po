@@ -1,0 +1,126 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-08 11:35+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: templates/base.html:40
+msgid "Назад"
+msgstr "Orqaga"
+
+#: templates/includes/custom_select.html:32
+msgid "Очистить"
+msgstr "Tozalash"
+
+#: templates/users/captcha.html:13
+msgid "Проверяем, что вы не робот"
+msgstr "Siz robot emasligingizni tekshiramiz"
+
+#: templates/users/captcha.html:20
+msgid "Я не робот"
+msgstr "Men robot emasman"
+
+#: templates/users/captcha.html:24
+msgid "Условия использования"
+msgstr "Foydalanish shartlari"
+
+#: templates/users/code.html:13
+msgid "Отправили код"
+msgstr "Kod yubordik"
+
+#: templates/users/code.html:13
+#, python-format
+msgid "на %(phone)s"
+msgstr "%(phone)s raqamiga"
+
+#: templates/users/code.html:14
+msgid "Если не получили СМС, проверьте чат «Коды подтверждения» в MAX"
+msgstr ""
+"Agar SMS kelmagan bo‘lsa, MAX ilovasidagi «Tasdiqlash kodlari» chatini "
+"tekshiring"
+
+#: templates/users/code.html:27 templates/users/code.html:121
+msgid "Получить новый код можно через"
+msgstr "Yangi kodni quyidagi vaqtdan keyin olishingiz mumkin"
+
+#: templates/users/code.html:109
+msgid "Отправить код повторно"
+msgstr "Kodni qayta yuborish"
+
+#: templates/users/login.html:9
+msgid "Язык"
+msgstr "Til"
+
+#: templates/users/login.html:15 templates/users/login.html:23
+msgid "Ответы на популярные вопросы"
+msgstr "Ommabop savollarga javoblar"
+
+#: templates/users/login.html:34
+msgid "С каким номером телефона хотите войти?"
+msgstr "Qaysi telefon raqami bilan kirishni xohlaysiz?"
+
+#: templates/users/login.html:35
+msgid "На него придёт СМС с кодом"
+msgstr "Unga kod yozilgan SMS keladi"
+
+#: templates/users/login.html:43
+msgid "Код страны"
+msgstr "Mamlakat kodi"
+
+#: templates/users/login.html:44
+msgid "Найти страну"
+msgstr "Mamlakatni topish"
+
+#: templates/users/login.html:45
+msgid "Войти с номером из некоторых стран пока не получится"
+msgstr "Hozircha ayrim mamlakatlardagi raqam bilan tizimga kirish imkoni yo‘q"
+
+#: templates/users/login.html:46
+msgid "Мы уже работаем над расширением списка"
+msgstr "Biz allaqachon ro‘yxatni kengaytirish ustida ishlayapmiz"
+
+#: templates/users/login.html:56
+msgid ""
+"Для входа нужен номер из России или страны из списка — нажмите на флаг, "
+"чтобы выбрать"
+msgstr ""
+"Kirish uchun Rossiya yoki ro‘yxatdagi davlatdan raqam kerak - tanlash uchun "
+"bayroq ustiga bosing"
+
+#: templates/users/login.html:58
+msgid "Продолжить"
+msgstr "Davom ettirish"
+
+#: templates/users/login.html:63
+msgid "Нажимая «Продолжить», вы принимаете"
+msgstr "\"Davom etish\" tugmasini bosish orqali siz rozilik bildirasiz"
+
+#: templates/users/login.html:64
+msgid "политику конфиденциальности"
+msgstr "maxfiylik siyosati"
+
+#: templates/users/login.html:65
+msgid "пользовательское соглашение"
+msgstr "foydalanuvchi shartnomasi"
+
+#: templates/users/login.html:66
+msgid "и"
+msgstr "va"
+
+#: templates/users/login.html:67
+msgid "правила персональных рекомендаций"
+msgstr "shaxsiy tavsiyalar qoidalari"
