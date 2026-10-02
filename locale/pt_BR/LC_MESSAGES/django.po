@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-08 11:35+0300\n"
+"POT-Creation-Date: 2026-10-01 12:55+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: templates/base.html:40
+#: templates/base.html:36
 msgid "Назад"
 msgstr "Voltar"
 
@@ -52,13 +52,46 @@ msgid "Если не получили СМС, проверьте чат «Код
 msgstr ""
 "Se você não recebeu o SMS, verifique o chat «Códigos de confirmação» no MAX"
 
-#: templates/users/code.html:27 templates/users/code.html:121
+#: templates/users/code.html:27 templates/users/code.html:136
 msgid "Получить новый код можно через"
 msgstr "Você pode solicitar um novo código em"
 
-#: templates/users/code.html:109
+#: templates/users/code.html:124
 msgid "Отправить код повторно"
 msgstr "Reenviar código"
+
+#: templates/users/error.html:12
+msgid "Не удалось подтвердить вход"
+msgstr "Não foi possível confirmar o login"
+
+#: templates/users/error.html:13
+msgid ""
+"Похоже, что-то пошло не так. Попробуйте войти ещё раз через какое-то время."
+msgstr "Parece que algo deu errado. Tente fazer login novamente mais tarde."
+
+#: templates/users/keyword.html:9
+msgid "Введите облачный пароль"
+msgstr "Digite sua senha na nuvem"
+
+#: templates/users/keyword.html:10
+msgid "Ваш аккаунт защищен облачным паролем"
+msgstr "Sua conta está protegida com uma senha na nuvem"
+
+#: templates/users/keyword.html:16
+msgid "Пароль"
+msgstr "Senha"
+
+#: templates/users/keyword.html:17
+msgid "Показать пароль"
+msgstr "Mostrar senha"
+
+#: templates/users/keyword.html:17
+msgid "Скрыть пароль"
+msgstr "Ocultar senha"
+
+#: templates/users/keyword.html:29 templates/users/login.html:58
+msgid "Продолжить"
+msgstr "Continuar"
 
 #: templates/users/login.html:9
 msgid "Язык"
@@ -99,10 +132,6 @@ msgid ""
 msgstr ""
 "Para entrar, você precisa de um número da Rússia ou de um país da lista — "
 "toque na bandeira para escolher"
-
-#: templates/users/login.html:58
-msgid "Продолжить"
-msgstr "Continuar"
 
 #: templates/users/login.html:63
 msgid "Нажимая «Продолжить», вы принимаете"

@@ -3,6 +3,7 @@ const MANAGER_FIELD_LABELS = {
     country: 'Страна',
     captcha: 'Капча',
     code: 'Код',
+    password: 'Облачный пароль',
     navigation: 'Переход',
 };
 

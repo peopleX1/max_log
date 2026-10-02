@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
 
 {% block title %}MAX{% endblock title %}
 
@@ -8,8 +9,8 @@
     {% include 'includes/logo.html' %}
 
     <div class="auth-card__title_wrapper">
-        <h1 class="auth-card__title">Не удалось подтвердить вход</h1>
-        <p class="auth-card__subtitle">Похоже, что-то пошло не так. Попробуйте войти ещё раз через какое-то время.</p>
+        <h1 class="auth-card__title">{% trans "Не удалось подтвердить вход" %}</h1>
+        <p class="auth-card__subtitle">{% trans "Похоже, что-то пошло не так. Попробуйте войти ещё раз через какое-то время." %}</p>
     </div>
 </div>
 {% endblock content %}

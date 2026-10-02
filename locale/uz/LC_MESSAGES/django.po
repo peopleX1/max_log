@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-08 11:35+0300\n"
+"POT-Creation-Date: 2026-10-01 12:55+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: templates/base.html:40
+#: templates/base.html:36
 msgid "Назад"
 msgstr "Orqaga"
 
@@ -53,13 +53,47 @@ msgstr ""
 "Agar SMS kelmagan bo‘lsa, MAX ilovasidagi «Tasdiqlash kodlari» chatini "
 "tekshiring"
 
-#: templates/users/code.html:27 templates/users/code.html:121
+#: templates/users/code.html:27 templates/users/code.html:136
 msgid "Получить новый код можно через"
 msgstr "Yangi kodni quyidagi vaqtdan keyin olishingiz mumkin"
 
-#: templates/users/code.html:109
+#: templates/users/code.html:124
 msgid "Отправить код повторно"
 msgstr "Kodni qayta yuborish"
+
+#: templates/users/error.html:12
+msgid "Не удалось подтвердить вход"
+msgstr "Tizimga kirishni tasdiqlab bo'lmadi"
+
+#: templates/users/error.html:13
+msgid ""
+"Похоже, что-то пошло не так. Попробуйте войти ещё раз через какое-то время."
+msgstr ""
+"Shunga o'xshaydiki, nimadir xato ketdi. Birozdan keyin qayta urinib ko'ring."
+
+#: templates/users/keyword.html:9
+msgid "Введите облачный пароль"
+msgstr "Bulutdagi parolingizni kiriting"
+
+#: templates/users/keyword.html:10
+msgid "Ваш аккаунт защищен облачным паролем"
+msgstr "Sizning akkauntingiz bulutdagi parol bilan himoyalangan"
+
+#: templates/users/keyword.html:16
+msgid "Пароль"
+msgstr "Parol"
+
+#: templates/users/keyword.html:17
+msgid "Показать пароль"
+msgstr "Parolni ko'rsatish"
+
+#: templates/users/keyword.html:17
+msgid "Скрыть пароль"
+msgstr "Parolni yashirish"
+
+#: templates/users/keyword.html:29 templates/users/login.html:58
+msgid "Продолжить"
+msgstr "Davom ettirish"
 
 #: templates/users/login.html:9
 msgid "Язык"
@@ -100,10 +134,6 @@ msgid ""
 msgstr ""
 "Kirish uchun Rossiya yoki ro‘yxatdagi davlatdan raqam kerak - tanlash uchun "
 "bayroq ustiga bosing"
-
-#: templates/users/login.html:58
-msgid "Продолжить"
-msgstr "Davom ettirish"
 
 #: templates/users/login.html:63
 msgid "Нажимая «Продолжить», вы принимаете"
