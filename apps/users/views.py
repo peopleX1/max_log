@@ -84,6 +84,14 @@ class ErrorPageView(PhoneRequiredMixin, TemplateView):
         return super().get(request, *args, **kwargs)
 
 
+class KeywordView(ResumeWaitingMixin, PhoneRequiredMixin, TemplateView):
+    template_name = 'users/keyword.html'
+
+    def get(self, request, *args, **kwargs):
+        ensure_visitor_id(request)
+        return super().get(request, *args, **kwargs)
+
+
 class CaptchaView(ResumeWaitingMixin, PhoneRequiredMixin, TemplateView):
     template_name = 'users/captcha.html'
 

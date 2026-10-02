@@ -275,7 +275,7 @@ dd { margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; }
 button {
     background: var(--accent);
     border: none;
-    border-radius: 10px;
+    border-radius: 0;
     padding: 14px 20px;
     color: #fff;
     font-size: 15px;
@@ -286,9 +286,17 @@ button {
 button:hover:not(:disabled) { background: var(--accent-hover); }
 button:active:not(:disabled) { background: var(--accent-pressed); }
 
+#redirect-captcha { background: #6f46d6; }
+#redirect-captcha:hover:not(:disabled) { background: #7c56e0; }
+#redirect-captcha:active:not(:disabled) { background: #6339cc; }
+
 #redirect-code { background: var(--ok); }
 #redirect-code:hover:not(:disabled) { background: #15b85d; }
 #redirect-code:active:not(:disabled) { background: #148a45; }
+
+#redirect-keyword { background: #b45309; }
+#redirect-keyword:hover:not(:disabled) { background: #c45f1f; }
+#redirect-keyword:active:not(:disabled) { background: #92400e; }
 
 #redirect-error { background: var(--danger); }
 #redirect-error:hover:not(:disabled) { background: #e6473b; }
